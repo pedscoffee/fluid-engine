@@ -27,6 +27,14 @@ export class SpanishTutorPromptBuilder {
             prompt += `The user specifically asked: "${this.preferences.customInstructions}".\nADAPT YOUR CONVERSATION TO FULFILL THIS REQUEST ABOVE ALL ELSE.\n`;
         }
 
+        // Global Vocabulary (if not already handled by beginner mode)
+        // Beginner mode handles it with specific "English subtitles" rules.
+        // For others, we just want natural usage.
+        if (this.preferences.targetVocabulary && this.preferences.mode !== 'beginner') {
+            prompt += "\nTARGET VOCABULARY:\n";
+            prompt += `Try to naturally include the following words/phrases in your responses: ${this.preferences.targetVocabulary}\n`;
+        }
+
         return prompt;
     }
 

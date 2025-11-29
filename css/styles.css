@@ -777,3 +777,113 @@ input:checked+.slider:before {
         transform: scale(0.98);
     }
 }
+
+/* Conversation Layout */
+.conversation-layout {
+    display: flex;
+    height: calc(100% - 60px);
+    /* Subtract top bar height approx */
+    position: relative;
+    overflow: hidden;
+}
+
+.chat-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+    transition: width 0.3s ease;
+}
+
+/* Side Panel */
+.translation-panel {
+    width: 300px;
+    background-color: var(--surface);
+    border-left: 1px solid var(--surface-light);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, width 0.3s ease, opacity 0.3s ease;
+    z-index: 20;
+}
+
+.translation-panel.collapsed {
+    width: 0;
+    transform: translateX(100%);
+    opacity: 0;
+    border-left: none;
+}
+
+.panel-header {
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--surface-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.panel-header h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.panel-content {
+    flex: 1;
+    padding: var(--spacing-md);
+    overflow-y: auto;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+}
+
+.panel-content .placeholder {
+    font-style: italic;
+    opacity: 0.7;
+    text-align: center;
+    margin-top: var(--spacing-xl);
+}
+
+/* CSV Import Styling */
+.input-with-action {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.icon-btn-small {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: var(--radius-full);
+}
+
+.icon-btn-small:hover {
+    background-color: var(--surface-light);
+    color: var(--text);
+}
+
+/* Mobile Adjustments for Side Panel */
+@media (max-width: 768px) {
+    .translation-panel {
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 100%;
+        width: 85%;
+        box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .translation-panel.collapsed {
+        transform: translateX(100%);
+        width: 85%;
+        /* Keep width for animation */
+    }
+}

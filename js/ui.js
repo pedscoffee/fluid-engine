@@ -46,6 +46,14 @@ export function initUI() {
     const voiceSelect = document.getElementById('voice-select');
     const closeSettingsBtn = document.getElementById('close-settings-btn');
 
+    // New DOM Elements
+    const csvUpload = document.getElementById('csv-upload');
+    const importCsvBtn = document.getElementById('import-csv-btn');
+    const translationPanel = document.getElementById('translation-panel');
+    const translationContent = document.getElementById('translation-content');
+    const toggleTranslationBtn = document.getElementById('toggle-translation-btn');
+    const togglePanelBtn = document.getElementById('toggle-panel-btn'); // If we added one inside the panel header too
+
     // Initialize inputs with saved prefs
     if (prefs.mode) {
         const el = document.querySelector(`input[name="mode"][value="${prefs.mode}"]`);
@@ -112,6 +120,11 @@ export function initUI() {
         advancedInputs.classList.add('hidden');
         sharedScenarioInputs.classList.add('hidden');
 
+        // Vocabulary is now shared, so we don't hide it based on mode
+        // But we might want to show/hide specific hints if needed. 
+        // For now, it stays visible.
+
+        // Show selected
         // Show selected
         if (mode === 'beginner') {
             beginnerInputs.classList.remove('hidden');
@@ -371,16 +384,58 @@ export function initUI() {
         preferences.update({ selectedVoice: voiceSelect.value });
     });
 
+    // CSV Import Logic
+    importCsvBtn.addEventListener('click', () => {
+        csvUpload.click();
+    });
+
+    csvUpload.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const text = event.target.result;
+            // Simple CSV parse: assume comma separated, maybe newlines
+            // We want to extract words and join them with commas
+            const words = text.split(/[\n,]+/).map(w => w.trim()).filter(w => w.length > 0);
+
+            if (words.length > 0) {
+                const currentVal = vocabListInput.value.trim();
+                const newVal = words.join(', ');
+                vocabListInput.value = currentVal ? `${currentVal}, ${newVal}` : newVal;
+                alert(`Imported ${words.length} words.`);
+            }
+        };
+        reader.readAsText(file);
+        // Reset input so same file can be selected again
+        csvUpload.value = '';
+    });
+
+    // Side Panel Logic
+    function toggleSidePanel(show) {
+        if (show === undefined) {
+            translationPanel.classList.toggle('collapsed');
+        } else if (show) {
+            translationPanel.classList.remove('collapsed');
+        } else {
+            translationPanel.classList.add('collapsed');
+        }
+    }
+
+    if (toggleTranslationBtn) {
+        toggleTranslationBtn.addEventListener('click', () => toggleSidePanel());
+    }
+
+    // Also allow closing from within the panel if we added a close button (optional)
+    // if (togglePanelBtn) togglePanelBtn.addEventListener('click', () => toggleSidePanel(false));
+
     // Helpers
     function addMessage(text, sender) {
         const div = document.createElement('div');
         div.className = `message ${sender}`;
 
         // Parse translation if present
-        // Matches:
-        // 1. "Spanish text\n[EN] English translation"
-        // 2. "Spanish text\nTranslation: English translation"
-        // 3. "Spanish text (English translation)"
         let spanishText = text;
         let englishText = null;
 
@@ -399,21 +454,34 @@ export function initUI() {
             }
         }
 
-        if (englishText && sender === 'system') {
-            div.classList.add('has-translation');
-            div.textContent = spanishText;
-
-            // Add tooltip
-            const tooltip = document.createElement('div');
-            tooltip.className = 'translation-tooltip';
-            tooltip.textContent = englishText;
-            div.appendChild(tooltip);
-        } else {
-            div.textContent = text;
-        }
-
+        div.textContent = spanishText;
         chatContainer.appendChild(div);
         scrollToBottom();
+
+        // Handle Translation Side Panel
+        if (sender === 'system' && englishText) {
+            // Update side panel
+            const p = document.createElement('p');
+            p.style.marginBottom = '1rem';
+            p.style.borderBottom = '1px solid var(--surface-light)';
+            p.style.paddingBottom = '0.5rem';
+            p.textContent = englishText;
+
+            // Clear placeholder if it exists
+            const placeholder = translationContent.querySelector('.placeholder');
+            if (placeholder) placeholder.remove();
+
+            // Prepend or append? Usually latest at bottom, but maybe top for visibility?
+            // Let's append to keep history sync
+            translationContent.appendChild(p);
+            translationContent.scrollTop = translationContent.scrollHeight;
+
+            // Auto-open panel if preference says so (or just keep user state)
+            // For now, we respect manual toggle, but maybe open on first translation?
+            if (translationPanel.classList.contains('collapsed') && prefs.showTranslation) {
+                toggleSidePanel(true);
+            }
+        }
     }
 
     function scrollToBottom() {
@@ -442,7 +510,20 @@ export function initUI() {
         conversationManager.saveToStorage();
 
         const speechService = await getSpeechService();
-        await speechService.speak(response, preferences.get());
+
+        // Strip English translation before speaking
+        let textToSpeak = response;
+        const enMatch = response.match(/^([\s\S]*?)\n\[EN\]\s*(.+)$/i);
+        if (enMatch) {
+            textToSpeak = enMatch[1].trim();
+        } else {
+            const transMatch = response.match(/^([\s\S]*?)\n(?:Translation|English):\s*(.+)$/i);
+            if (transMatch) {
+                textToSpeak = transMatch[1].trim();
+            }
+        }
+
+        await speechService.speak(textToSpeak, preferences.get());
     }
 
     async function checkForSavedSession() {

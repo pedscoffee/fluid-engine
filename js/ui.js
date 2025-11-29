@@ -34,8 +34,6 @@ export function initUI() {
     const focusGrammarToggle = document.getElementById('focus-grammar-toggle');
     const focusScenarioToggle = document.getElementById('focus-scenario-toggle');
 
-    const proficiencySelect = document.getElementById('proficiency-select');
-
     // Input Sections
     const vocabInputs = document.getElementById('vocab-inputs');
     const grammarInputs = document.getElementById('grammar-inputs');
@@ -68,10 +66,6 @@ export function initUI() {
     const closeSettingsBtn = document.getElementById('close-settings-btn');
 
     // Initialize inputs with saved prefs
-    if (prefs.proficiencyLevel) {
-        proficiencySelect.value = prefs.proficiencyLevel;
-    }
-
     if (prefs.focusVocabulary) {
         focusVocabToggle.checked = true;
         vocabInputs.classList.remove('hidden');
@@ -202,7 +196,6 @@ export function initUI() {
         const selectedGrammar = Array.from(document.querySelectorAll('input[name="grammar"]:checked')).map(cb => cb.value);
 
         const newPrefs = {
-            proficiencyLevel: proficiencySelect.value,
             focusVocabulary: focusVocabToggle.checked,
             focusGrammar: focusGrammarToggle.checked,
             focusScenarios: focusScenarioToggle.checked,

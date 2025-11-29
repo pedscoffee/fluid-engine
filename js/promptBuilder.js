@@ -18,15 +18,6 @@ export class SpanishTutorPromptBuilder {
         prompt += "   [EN] {English translation of your response}\n";
         prompt += "3. Do NOT put stars (*) around vocabulary words. Just use them naturally.\n\n";
 
-        // Proficiency Level
-        const levelKey = this.preferences.proficiencyLevel || 'intermediate';
-        const levelData = skillLevelTemplates[levelKey] || skillLevelTemplates.intermediate;
-
-        prompt += `PROFICIENCY LEVEL: ${levelData.label}\n`;
-        prompt += `Language Style: ${levelData.language}\n`;
-        prompt += `Feedback Style: ${levelData.feedback}\n`;
-        prompt += `Complexity Guide: ${levelData.complexity}\n\n`;
-
         // Dynamic Instructions based on Toggles
         prompt += "INSTRUCTIONS:\n";
 

@@ -14,7 +14,8 @@ export class UserPreferences {
             grammarFocus: [],
             vocabularyFocus: [],
             customInstructions: '',
-            conversationStyle: 'natural'
+            conversationStyle: 'natural',
+            showTranslation: false
         };
     }
 

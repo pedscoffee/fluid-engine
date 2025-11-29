@@ -35,16 +35,14 @@ export class ConversationManager {
         const builder = new SpanishTutorPromptBuilder(userPreferences);
         this.systemPrompt = builder.build();
 
+        // If translation is enabled, add translation instructions
+        if (userPreferences.showTranslation) {
+            this.systemPrompt += "\n\nIMPORTANT: After each Spanish response, provide an English translation on a new line starting with '[EN]'. Format: Your Spanish response\n[EN] English translation";
+        }
+
         this.messages = [
             { role: "system", content: this.systemPrompt }
         ];
-
-        // Note: We don't pre-fill an assistant message here because we want the user to start 
-        // OR we can have the AI start. Let's have the AI start for a better experience.
-        // But to save inference time on load, we might just hardcode the first greeting in UI 
-        // and only send user input to LLM.
-        // Actually, let's let the LLM generate the greeting based on the context!
-        // It makes it more dynamic.
     }
 
     async generateResponse(userMessage) {
@@ -83,6 +81,11 @@ export class ConversationManager {
 
     getHistory() {
         return this.messages;
+    }
+
+    reset() {
+        this.messages = [];
+        this.systemPrompt = "";
     }
 }
 

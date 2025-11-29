@@ -26,11 +26,20 @@ export function initUI() {
     const confirmAdjustBtn = document.getElementById('confirm-adjust-btn');
     const adjustInput = document.getElementById('adjust-input');
     const practiceGoalInput = document.getElementById('practice-goal');
+    const chatInput = document.getElementById('chat-input');
+    const sendBtn = document.getElementById('send-btn');
+    const clearChatBtn = document.getElementById('clear-chat-btn');
+    const settingsModal = document.getElementById('settings-modal');
+    const translationToggle = document.getElementById('translation-toggle');
+    const closeSettingsBtn = document.getElementById('close-settings-btn');
 
     // Initialize inputs with saved prefs
     if (prefs.skillLevel) {
         const el = document.querySelector(`input[name="skill-level"][value="${prefs.skillLevel}"]`);
         if (el) el.checked = true;
+    }
+    if (prefs.showTranslation !== undefined) {
+        translationToggle.checked = prefs.showTranslation;
     }
 
     // Event Listeners
@@ -192,11 +201,84 @@ export function initUI() {
         }
     });
 
+    // Text Input Handlers
+    sendBtn.addEventListener('click', () => {
+        const text = chatInput.value.trim();
+        if (text) {
+            handleUserMessage(text);
+            chatInput.value = '';
+        }
+    });
+
+    chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            const text = chatInput.value.trim();
+            if (text) {
+                handleUserMessage(text);
+                chatInput.value = '';
+            }
+        }
+    });
+
+    // Clear Chat Handler
+    clearChatBtn.addEventListener('click', async () => {
+        if (confirm('Clear all messages and start fresh?')) {
+            // Clear UI
+            const systemGreeting = chatContainer.querySelector('.message.system');
+            chatContainer.innerHTML = '';
+            if (systemGreeting) {
+                chatContainer.appendChild(systemGreeting.cloneNode(true));
+            }
+
+            // Reset conversation manager
+            const conversationManager = await getConversationManager();
+            conversationManager.reset();
+
+            // Restart with current preferences
+            const currentPrefs = preferences.get();
+            conversationManager.startConversation(currentPrefs);
+        }
+    });
+
+    // Settings Modal Handlers
+    const settingsBtn = document.getElementById('settings-btn');
+    settingsBtn.addEventListener('click', () => {
+        settingsModal.classList.remove('hidden');
+    });
+
+    closeSettingsBtn.addEventListener('click', () => {
+        settingsModal.classList.add('hidden');
+    });
+
+    translationToggle.addEventListener('change', () => {
+        preferences.update({ showTranslation: translationToggle.checked });
+    });
+
     // Helpers
     function addMessage(text, sender) {
         const div = document.createElement('div');
         div.className = `message ${sender}`;
-        div.textContent = text;
+
+        // Parse translation if present (format: "Spanish text\n[EN] English translation")
+        const translationMatch = text.match(/^([\s\S]*?)\n\[EN\]\s*(.+)$/i);
+
+        if (translationMatch && sender === 'system') {
+            const spanishText = translationMatch[1].trim();
+            const englishText = translationMatch[2].trim();
+
+            div.classList.add('has-translation');
+            div.textContent = spanishText;
+
+            // Add tooltip
+            const tooltip = document.createElement('div');
+            tooltip.className = 'translation-tooltip';
+            tooltip.textContent = englishText;
+            div.appendChild(tooltip);
+        } else {
+            div.textContent = text;
+        }
+
         chatContainer.appendChild(div);
         scrollToBottom();
     }

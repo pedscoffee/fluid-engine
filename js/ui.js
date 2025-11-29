@@ -3,6 +3,7 @@ import { SpanishTutorPromptBuilder } from './promptBuilder.js';
 import { getConversationManager } from './conversation.js';
 import { getSpeechService } from './speech.js';
 import { scenarios } from './scenarios.js';
+import { initTutor, getTutorManager } from './tutor.js';
 
 export function initUI() {
     const preferences = new UserPreferences();
@@ -45,13 +46,22 @@ export function initUI() {
     const voiceSelect = document.getElementById('voice-select');
     const closeSettingsBtn = document.getElementById('close-settings-btn');
 
-    // New DOM Elements
+    // Tutor Panel Elements
     const csvUpload = document.getElementById('csv-upload');
     const importCsvBtn = document.getElementById('import-csv-btn');
-    const translationPanel = document.getElementById('translation-panel');
-    const translationContent = document.getElementById('translation-content');
-    const toggleTranslationBtn = document.getElementById('toggle-translation-btn');
-    const togglePanelBtn = document.getElementById('toggle-panel-btn'); // If we added one inside the panel header too
+    const tutorPanel = document.getElementById('tutor-panel');
+    const tutorChat = document.getElementById('tutor-chat');
+    const toggleTutorBtn = document.getElementById('toggle-tutor-btn');
+    const tutorInput = document.getElementById('tutor-input');
+    const tutorSendBtn = document.getElementById('tutor-send-btn');
+    const tutorSettingsBtn = document.getElementById('tutor-settings-btn');
+    const tutorInstructions = document.getElementById('tutor-instructions');
+    const tutorPreset = document.getElementById('tutor-preset');
+    const tutorCustomInstruction = document.getElementById('tutor-custom-instruction');
+    const tutorApplyBtn = document.getElementById('tutor-apply-btn');
+
+    // Dark Mode Toggle
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
 
     // Initialize inputs with saved prefs
     if (prefs.mode) {
@@ -73,6 +83,17 @@ export function initUI() {
 
     if (prefs.muted !== undefined) {
         muteToggle.checked = prefs.muted;
+    }
+
+    // Initialize dark mode
+    if (prefs.darkMode) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        darkModeToggle.checked = true;
+    }
+
+    // Initialize tutor preset
+    if (prefs.tutorInstruction) {
+        tutorPreset.value = prefs.tutorInstruction;
     }
 
     // Populate voice dropdown when voices are loaded
@@ -193,6 +214,10 @@ export function initUI() {
             loadingText.textContent = "Loading Speech Engine...";
             await speechService.init();
 
+            // Init Tutor
+            loadingText.textContent = "Initializing AI Tutor...";
+            await initTutor(conversationManager);
+
             // 4. Start Conversation
             conversationManager.startConversation(newPrefs);
 
@@ -216,12 +241,15 @@ export function initUI() {
             // Speak greeting (async, don't await blocking UI)
             speechService.speak(greetingObj.spanish, newPrefs);
 
-            // Always translate greeting
-            conversationManager.translateText(greetingObj.spanish).then(translation => {
-                if (translation) {
-                    updateSidePanel(translation);
-                }
-            });
+            // Get tutor feedback on greeting
+            const tutorManager = getTutorManager();
+            if (tutorManager) {
+                tutorManager.provideFeedback(greetingObj.spanish).then(feedback => {
+                    if (feedback) {
+                        addTutorMessage(feedback, 'tutor');
+                    }
+                });
+            }
 
         } catch (error) {
             console.error(error);
@@ -411,23 +439,91 @@ export function initUI() {
         csvUpload.value = '';
     });
 
-    // Side Panel Logic
-    function toggleSidePanel(show) {
+    // Tutor Panel Logic
+    function toggleTutorPanel(show) {
         if (show === undefined) {
-            translationPanel.classList.toggle('collapsed');
+            tutorPanel.classList.toggle('collapsed');
         } else if (show) {
-            translationPanel.classList.remove('collapsed');
+            tutorPanel.classList.remove('collapsed');
         } else {
-            translationPanel.classList.add('collapsed');
+            tutorPanel.classList.add('collapsed');
         }
     }
 
-    if (toggleTranslationBtn) {
-        toggleTranslationBtn.addEventListener('click', () => toggleSidePanel());
+    if (toggleTutorBtn) {
+        toggleTutorBtn.addEventListener('click', () => toggleTutorPanel());
     }
 
-    // Also allow closing from within the panel if we added a close button (optional)
-    // if (togglePanelBtn) togglePanelBtn.addEventListener('click', () => toggleSidePanel(false));
+    // Dark Mode Toggle
+    darkModeToggle.addEventListener('change', () => {
+        const isDark = darkModeToggle.checked;
+        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        preferences.update({ darkMode: isDark });
+    });
+
+    // Tutor Settings Toggle
+    tutorSettingsBtn.addEventListener('click', () => {
+        tutorInstructions.classList.toggle('collapsed');
+    });
+
+    // Tutor Preset Selection
+    tutorPreset.addEventListener('change', () => {
+        const preset = tutorPreset.value;
+        if (preset === 'custom') {
+            tutorCustomInstruction.classList.remove('hidden');
+        } else {
+            tutorCustomInstruction.classList.add('hidden');
+        }
+        preferences.update({ tutorInstruction: preset });
+    });
+
+    // Tutor Apply Button
+    tutorApplyBtn.addEventListener('click', async () => {
+        const tutorManager = getTutorManager();
+        if (!tutorManager) return;
+
+        const preset = tutorPreset.value;
+        let instruction;
+
+        switch (preset) {
+            case 'translation':
+                instruction = 'Translate the Spanish message to English. Be clear and concise.';
+                break;
+            case 'grammar':
+                instruction = 'Translate the Spanish message to English and explain any grammar patterns used.';
+                break;
+            case 'verbs':
+                instruction = 'Point out any irregular verbs in the Spanish message and explain their conjugations. Also provide the English translation.';
+                break;
+            case 'vocabulary':
+                instruction = 'Translate the Spanish message to English and suggest related vocabulary words that would be helpful.';
+                break;
+            case 'mistakes':
+                instruction = 'Identify any common learner mistakes in the Spanish message, explain the correct usage, and provide the English translation.';
+                break;
+            case 'custom':
+                instruction = tutorCustomInstruction.value.trim();
+                if (!instruction) {
+                    alert('Please enter a custom instruction.');
+                    return;
+                }
+                break;
+        }
+
+        tutorManager.setInstruction(instruction);
+        addTutorMessage(`Tutor focus updated: ${preset === 'custom' ? instruction : preset}`, 'system');
+        tutorInstructions.classList.add('collapsed');
+    });
+
+    // Tutor Q&A
+    tutorSendBtn.addEventListener('click', handleTutorQuestion);
+
+    tutorInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleTutorQuestion();
+        }
+    });
 
     // Helpers
     function addMessage(text, sender) {
@@ -439,24 +535,45 @@ export function initUI() {
         scrollToBottom();
     }
 
-    function updateSidePanel(englishText) {
-        if (!englishText) return;
-
-        const p = document.createElement('p');
-        p.style.marginBottom = '1rem';
-        p.style.borderBottom = '1px solid var(--surface-light)';
-        p.style.paddingBottom = '0.5rem';
-        p.textContent = englishText;
+    function addTutorMessage(text, sender) {
+        if (!text) return;
 
         // Clear placeholder if it exists
-        const placeholder = translationContent.querySelector('.placeholder');
+        const placeholder = tutorChat.querySelector('.tutor-placeholder');
         if (placeholder) placeholder.remove();
 
-        translationContent.appendChild(p);
-        translationContent.scrollTop = translationContent.scrollHeight;
+        const div = document.createElement('div');
+        div.className = `tutor-message ${sender}`;
+        div.textContent = text;
+        tutorChat.appendChild(div);
+        tutorChat.scrollTop = tutorChat.scrollHeight;
+    }
 
-        // Auto-open logic removed per user request
-        // The panel will stay closed unless manually opened
+    async function handleTutorQuestion() {
+        const question = tutorInput.value.trim();
+        if (!question) return;
+
+        addTutorMessage(question, 'user');
+        tutorInput.value = '';
+
+        // Show typing indicator
+        const typingIndicator = document.createElement('div');
+        typingIndicator.className = 'tutor-message tutor typing-indicator';
+        typingIndicator.innerHTML = '<span></span><span></span><span></span>';
+        tutorChat.appendChild(typingIndicator);
+        tutorChat.scrollTop = tutorChat.scrollHeight;
+
+        const tutorManager = getTutorManager();
+        if (tutorManager) {
+            const answer = await tutorManager.answerQuestion(question);
+            typingIndicator.remove();
+            if (answer) {
+                addTutorMessage(answer, 'tutor');
+            }
+        } else {
+            typingIndicator.remove();
+            addTutorMessage('Tutor is not initialized yet.', 'system');
+        }
     }
 
     function scrollToBottom() {
@@ -490,12 +607,15 @@ export function initUI() {
         // Speak Spanish immediately
         speechService.speak(responseObj.spanish, preferences.get());
 
-        // Pass 2: Always translate asynchronously
-        conversationManager.translateText(responseObj.spanish).then(translation => {
-            if (translation) {
-                updateSidePanel(translation);
-            }
-        });
+        // Pass 2: Get tutor feedback asynchronously
+        const tutorManager = getTutorManager();
+        if (tutorManager) {
+            tutorManager.provideFeedback(responseObj.spanish).then(feedback => {
+                if (feedback) {
+                    addTutorMessage(feedback, 'tutor');
+                }
+            });
+        }
     }
 
     async function checkForSavedSession() {

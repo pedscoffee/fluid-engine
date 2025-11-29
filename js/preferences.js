@@ -19,7 +19,9 @@ export class UserPreferences {
             selectedVoice: '',
             mode: 'intermediate',
             targetVocabulary: '',
-            selectedGrammar: []
+            selectedGrammar: [],
+            darkMode: false,
+            tutorInstruction: 'translation'
         };
     }
 

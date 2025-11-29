@@ -178,8 +178,8 @@
                     <span id="connection-status">Ready</span>
                 </div>
                 <div class="top-actions">
-                    <button id="toggle-translation-btn" class="icon-btn" aria-label="Toggle Translation Panel"
-                        title="Toggle Translation Panel">
+                    <button id="toggle-tutor-btn" class="icon-btn" aria-label="Toggle Tutor Panel"
+                        title="Toggle Tutor Panel">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -255,12 +255,56 @@
                     </div>
                 </div>
 
-                <aside id="translation-panel" class="translation-panel collapsed">
+                <aside id="tutor-panel" class="tutor-panel collapsed">
                     <div class="panel-header">
-                        <h3>English Translation</h3>
+                        <h3>AI Tutor</h3>
+                        <button id="tutor-settings-btn" class="icon-btn-small" aria-label="Tutor Settings"
+                            title="Tutor Settings">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path
+                                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                                </path>
+                            </svg>
+                        </button>
                     </div>
-                    <div id="translation-content" class="panel-content">
-                        <p class="placeholder">Translations will appear here...</p>
+
+                    <!-- Tutor Instructions -->
+                    <div id="tutor-instructions" class="tutor-instructions collapsed">
+                        <label for="tutor-preset">Tutor Focus</label>
+                        <select id="tutor-preset" class="tutor-preset-dropdown">
+                            <option value="translation">Translation Only (Default)</option>
+                            <option value="grammar">Grammar Explanations</option>
+                            <option value="verbs">Irregular Verbs</option>
+                            <option value="vocabulary">Vocabulary Building</option>
+                            <option value="mistakes">Common Mistakes</option>
+                            <option value="custom">Custom...</option>
+                        </select>
+                        <textarea id="tutor-custom-instruction"
+                            placeholder="e.g., 'Focus on subjunctive mood and explain when to use it'"
+                            class="tutor-custom-input hidden"></textarea>
+                        <button id="tutor-apply-btn" class="btn-secondary btn-small">Apply</button>
+                    </div>
+
+                    <!-- Tutor Chat -->
+                    <div id="tutor-chat" class="tutor-chat">
+                        <p class="tutor-placeholder">Tutor feedback will appear here...</p>
+                    </div>
+
+                    <!-- Tutor Input -->
+                    <div class="tutor-input-area">
+                        <input type="text" id="tutor-input" placeholder="Ask the tutor a question..."
+                            autocomplete="off">
+                        <button id="tutor-send-btn" class="icon-btn primary" aria-label="Send question">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <line x1="22" y1="2" x2="11" y2="13" />
+                                <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                            </svg>
+                        </button>
                     </div>
                 </aside>
             </div>
@@ -283,6 +327,13 @@
             <div class="modal-content">
                 <h3>Settings</h3>
 
+                <div class="setting-item">
+                    <label for="dark-mode-toggle">Dark Mode</label>
+                    <label class="switch">
+                        <input type="checkbox" id="dark-mode-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
                 <div class="setting-item">
                     <label for="mute-toggle">Mute Voice</label>
                     <label class="switch">

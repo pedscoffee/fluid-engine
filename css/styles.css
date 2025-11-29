@@ -141,11 +141,18 @@ body {
 }
 
 /* Setup Screen */
+#setup-screen {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    /* Smooth scroll on iOS */
+}
+
 #setup-screen .container {
     padding: var(--spacing-xl);
     display: flex;
     flex-direction: column;
-    height: 100%;
+    min-height: 100%;
+    /* Allow growing */
     justify-content: center;
     gap: var(--spacing-xl);
 }

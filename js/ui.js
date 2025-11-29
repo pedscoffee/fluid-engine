@@ -204,21 +204,31 @@ export function initUI() {
             // 5. Generate Greeting
             // We'll ask the LLM to generate the first message based on the prompt
             loadingText.textContent = "Starting conversation...";
-            const greeting = await conversationManager.generateResponse("Hola"); // Trigger first response
-            addMessage(greeting, 'system');
+            const greetingObj = await conversationManager.generateResponse("Hola"); // Trigger first response
 
-            // Speak greeting
-            await speechService.speak(greeting, newPrefs);
-
-            // 6. Switch Screens
+            // 6. Switch Screens IMMEDIATELY so user sees the text
             loadingOverlay.classList.add('hidden');
             setupScreen.classList.remove('active');
             setupScreen.classList.add('hidden');
             conversationScreen.classList.remove('hidden');
             conversationScreen.classList.add('active');
 
+            addMessage(greetingObj.spanish, 'system');
+
             // Save initial state
             conversationManager.saveToStorage();
+
+            // Speak greeting (async, don't await blocking UI)
+            speechService.speak(greetingObj.spanish, newPrefs);
+
+            // Translate greeting if enabled
+            if (newPrefs.showTranslation) {
+                conversationManager.translateText(greetingObj.spanish).then(translation => {
+                    if (translation) {
+                        updateSidePanel(translation);
+                    }
+                });
+            }
 
         } catch (error) {
             console.error(error);
@@ -456,10 +466,8 @@ export function initUI() {
         translationContent.appendChild(p);
         translationContent.scrollTop = translationContent.scrollHeight;
 
-        // Auto-open panel if it's collapsed
-        if (translationPanel.classList.contains('collapsed')) {
-            toggleSidePanel(true);
-        }
+        // Auto-open logic removed per user request
+        // The panel will stay closed unless manually opened
     }
 
     function scrollToBottom() {

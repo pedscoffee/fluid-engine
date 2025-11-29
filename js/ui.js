@@ -2,6 +2,7 @@ import { UserPreferences } from './preferences.js';
 import { SpanishTutorPromptBuilder } from './promptBuilder.js';
 import { getConversationManager } from './conversation.js';
 import { getSpeechService } from './speech.js';
+import { scenarios } from './scenarios.js';
 
 export function initUI() {
     const preferences = new UserPreferences();
@@ -26,11 +27,14 @@ export function initUI() {
     const confirmAdjustBtn = document.getElementById('confirm-adjust-btn');
     const adjustInput = document.getElementById('adjust-input');
     const practiceGoalInput = document.getElementById('practice-goal');
+    const scenarioSelect = document.getElementById('scenario-select');
     const chatInput = document.getElementById('chat-input');
     const sendBtn = document.getElementById('send-btn');
     const clearChatBtn = document.getElementById('clear-chat-btn');
     const settingsModal = document.getElementById('settings-modal');
     const translationToggle = document.getElementById('translation-toggle');
+    const muteToggle = document.getElementById('mute-toggle');
+    const voiceSelect = document.getElementById('voice-select');
     const closeSettingsBtn = document.getElementById('close-settings-btn');
 
     // Initialize inputs with saved prefs
@@ -41,6 +45,46 @@ export function initUI() {
     if (prefs.showTranslation !== undefined) {
         translationToggle.checked = prefs.showTranslation;
     }
+    if (prefs.muted !== undefined) {
+        muteToggle.checked = prefs.muted;
+    }
+
+    // Populate voice dropdown when voices are loaded
+    function populateVoices() {
+        const voices = window.speechSynthesis.getVoices();
+        const spanishVoices = voices.filter(v => v.lang.includes('es'));
+
+        voiceSelect.innerHTML = '<option value="">Default</option>';
+        spanishVoices.forEach((voice, index) => {
+            const option = document.createElement('option');
+            option.value = index;
+            option.textContent = `${voice.name} (${voice.lang})`;
+            voiceSelect.appendChild(option);
+        });
+
+        if (prefs.selectedVoice !== undefined) {
+            voiceSelect.value = prefs.selectedVoice;
+        }
+    }
+
+    // Voices load asynchronously in some browsers
+    if (window.speechSynthesis.onvoiceschanged !== undefined) {
+        window.speechSynthesis.onvoiceschanged = populateVoices;
+    }
+    populateVoices();
+
+    // Check for saved session on load
+    checkForSavedSession();
+
+    // Scenario selection handler
+    scenarioSelect.addEventListener('change', () => {
+        const selectedScenario = scenarioSelect.value;
+        if (selectedScenario && scenarios[selectedScenario]) {
+            practiceGoalInput.value = scenarios[selectedScenario].instruction;
+        } else {
+            practiceGoalInput.value = '';
+        }
+    });
 
     // Event Listeners
     startBtn.addEventListener('click', async () => {
@@ -103,7 +147,7 @@ export function initUI() {
             addMessage(greeting, 'system');
 
             // Speak greeting
-            await speechService.speak(greeting);
+            await speechService.speak(greeting, newPrefs);
 
             // 6. Switch Screens
             loadingOverlay.classList.add('hidden');
@@ -111,6 +155,9 @@ export function initUI() {
             setupScreen.classList.add('hidden');
             conversationScreen.classList.remove('hidden');
             conversationScreen.classList.add('active');
+
+            // Save initial state
+            conversationManager.saveToStorage();
 
         } catch (error) {
             console.error(error);
@@ -197,7 +244,8 @@ export function initUI() {
             const response = await conversationManager.generateResponse(`[System: User changed focus to "${instruction}". Acknowledge this change naturally in Spanish.]`);
             addMessage(response, 'system');
             const speechService = await getSpeechService();
-            await speechService.speak(response);
+            const currentPrefs = preferences.get();
+            await speechService.speak(response, currentPrefs);
         }
     });
 
@@ -251,8 +299,28 @@ export function initUI() {
         settingsModal.classList.add('hidden');
     });
 
+    // Keyboard accessibility for modals
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            if (!settingsModal.classList.contains('hidden')) {
+                settingsModal.classList.add('hidden');
+            }
+            if (!adjustModal.classList.contains('hidden')) {
+                adjustModal.classList.add('hidden');
+            }
+        }
+    });
+
     translationToggle.addEventListener('change', () => {
         preferences.update({ showTranslation: translationToggle.checked });
+    });
+
+    muteToggle.addEventListener('change', () => {
+        preferences.update({ muted: muteToggle.checked });
+    });
+
+    voiceSelect.addEventListener('change', () => {
+        preferences.update({ selectedVoice: voiceSelect.value });
     });
 
     // Helpers
@@ -290,14 +358,78 @@ export function initUI() {
     async function handleUserMessage(text) {
         addMessage(text, 'user');
 
-        // Show typing indicator?
+        // Show typing indicator
+        const typingIndicator = document.createElement('div');
+        typingIndicator.className = 'message system typing-indicator';
+        typingIndicator.innerHTML = '<span></span><span></span><span></span>';
+        chatContainer.appendChild(typingIndicator);
+        scrollToBottom();
 
         const conversationManager = await getConversationManager();
         const response = await conversationManager.generateResponse(text);
 
+        // Remove typing indicator
+        typingIndicator.remove();
+
         addMessage(response, 'system');
 
+        // Save conversation after each exchange
+        conversationManager.saveToStorage();
+
         const speechService = await getSpeechService();
-        await speechService.speak(response);
+        await speechService.speak(response, preferences.get());
+    }
+
+    async function checkForSavedSession() {
+        const conversationManager = await getConversationManager();
+        const savedData = conversationManager.loadFromStorage();
+
+        if (savedData) {
+            const resume = confirm('You have a previous session. Would you like to resume it?');
+            if (resume) {
+                await resumeSession(savedData);
+            } else {
+                conversationManager.clearStorage();
+            }
+        }
+    }
+
+    async function resumeSession(savedData) {
+        try {
+            loadingOverlay.classList.remove('hidden');
+            loadingText.textContent = "Resuming session...";
+
+            // Initialize services
+            const conversationManager = await getConversationManager();
+            const speechService = await getSpeechService();
+
+            await conversationManager.init();
+            await speechService.init();
+
+            // Restore conversation state
+            conversationManager.restoreFromData(savedData);
+
+            // Restore UI messages (excluding system messages)
+            chatContainer.innerHTML = '';
+            for (const msg of savedData.messages) {
+                if (msg.role === 'user') {
+                    addMessage(msg.content, 'user');
+                } else if (msg.role === 'assistant') {
+                    addMessage(msg.content, 'system');
+                }
+            }
+
+            // Switch to conversation screen
+            loadingOverlay.classList.add('hidden');
+            setupScreen.classList.remove('active');
+            setupScreen.classList.add('hidden');
+            conversationScreen.classList.remove('hidden');
+            conversationScreen.classList.add('active');
+        } catch (error) {
+            console.error('Resume error:', error);
+            alert('Failed to resume session: ' + error.message);
+            conversationManager.clearStorage();
+            loadingOverlay.classList.add('hidden');
+        }
     }
 }

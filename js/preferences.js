@@ -15,7 +15,9 @@ export class UserPreferences {
             vocabularyFocus: [],
             customInstructions: '',
             conversationStyle: 'natural',
-            showTranslation: false
+            showTranslation: false,
+            muted: false,
+            selectedVoice: ''
         };
     }
 

@@ -569,3 +569,166 @@ input:checked+.slider:before {
 .message.system.has-translation:hover .translation-tooltip {
     opacity: 1;
 }
+
+/* Typing Indicator */
+.typing-indicator {
+    display: flex;
+    gap: 4px;
+    padding: var(--spacing-md) !important;
+}
+
+.typing-indicator span {
+    width: 8px;
+    height: 8px;
+    background-color: var(--text-muted);
+    border-radius: 50%;
+    animation: typing 1.4s infinite;
+}
+
+.typing-indicator span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typing {
+
+    0%,
+    60%,
+    100% {
+        transform: scale(1);
+        opacity: 0.5;
+    }
+
+    30% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+}
+
+/* Typing Indicator */
+.typing-indicator {
+    display: flex;
+    gap: 4px;
+    padding: var(--spacing-md) !important;
+}
+
+.typing-indicator span {
+    width: 8px;
+    height: 8px;
+    background-color: var(--text-muted);
+    border-radius: 50%;
+    animation: typing 1.4s infinite;
+}
+
+.typing-indicator span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typing {
+
+    0%,
+    60%,
+    100% {
+        transform: scale(1);
+        opacity: 0.5;
+    }
+
+    30% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+}
+
+/* Voice Dropdown */
+.voice-dropdown,
+.scenario-dropdown {
+    flex: 1;
+    width: 100%;
+    background-color: var(--surface);
+    border: 1px solid var(--surface-light);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+    color: var(--text);
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.voice-dropdown:focus,
+.scenario-dropdown:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+
+    /* Ensure minimum touch targets of 44px */
+    .icon-btn {
+        min-width: 44px;
+        min-height: 44px;
+        padding: var(--spacing-md);
+    }
+
+    .btn-secondary {
+        min-height: 44px;
+    }
+
+    /* Make mic button easier to tap */
+    .mic-btn {
+        width: 64px;
+        height: 64px;
+    }
+
+    /* Optimize chat message width for mobile */
+    .message {
+        max-width: 85%;
+        font-size: 1rem;
+    }
+
+    /* Better mobile controls layout */
+    .controls-area {
+        padding: var(--spacing-md);
+    }
+
+    .input-area {
+        gap: var(--spacing-sm);
+    }
+
+    #chat-input {
+        font-size: 16px;
+        /* Prevents zoom on iOS */
+    }
+
+    /* Mobile segmented control */
+    .segmented-control label {
+        font-size: 0.9rem;
+        padding: var(--spacing-md);
+    }
+
+    /* Adjust hero for mobile */
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+
+    .hero .subtitle {
+        font-size: 1rem;
+    }
+}
+
+/* Improve tap feedback on mobile */
+@media (hover: none) {
+
+    .btn-primary:active,
+    .btn-secondary:active,
+    .icon-btn:active {
+        opacity: 0.7;
+        transform: scale(0.98);
+    }
+}

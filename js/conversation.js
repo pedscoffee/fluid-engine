@@ -8,25 +8,40 @@ export class ConversationManager {
         this.messages = [];
         this.systemPrompt = "";
         this.isInitialized = false;
+        this.storageKey = 'fluidez_conversation';
     }
 
     async init(progressCallback) {
         if (this.isInitialized) return;
 
-        try {
-            this.engine = new webllm.MLCEngine();
-            this.engine.setInitProgressCallback((report) => {
-                if (progressCallback) {
-                    progressCallback(report);
-                }
-            });
+        const maxTries = 3;
+        let lastError = null;
 
-            await this.engine.reload(config.modelId);
-            this.isInitialized = true;
-            console.log("WebLLM initialized");
-        } catch (error) {
-            console.error("Failed to initialize WebLLM:", error);
-            throw error;
+        for (let attempt = 1; attempt <= maxTries; attempt++) {
+            try {
+                this.engine = new webllm.MLCEngine();
+                this.engine.setInitProgressCallback((report) => {
+                    if (progressCallback) {
+                        progressCallback(report);
+                    }
+                });
+
+                await this.engine.reload(config.modelId);
+                this.isInitialized = true;
+                console.log("WebLLM initialized");
+                return;
+            } catch (error) {
+                lastError = error;
+                console.error(`Initialization attempt ${attempt} failed:`, error);
+
+                if (attempt < maxTries) {
+                    const delay = attempt * 2000; // Progressive backoff
+                    console.log(`Retrying in ${delay}ms...`);
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                } else {
+                    throw new Error(`Failed to initialize AI model after ${maxTries} attempts: ${lastError.message}`);
+                }
+            }
         }
     }
 
@@ -47,17 +62,16 @@ export class ConversationManager {
 
     async generateResponse(userMessage) {
         if (!this.isInitialized) {
-            throw new Error("Engine not initialized");
+            throw new Error("AI model not initialized. Please reload the page.");
         }
 
-        // Add user message
         this.messages.push({ role: "user", content: userMessage });
 
         try {
             const completion = await this.engine.chat.completions.create({
                 messages: this.messages,
                 temperature: 0.7,
-                max_tokens: 256, // Keep responses concise
+                max_tokens: 256,
             });
 
             const reply = completion.choices[0].message.content;
@@ -66,7 +80,9 @@ export class ConversationManager {
             return reply;
         } catch (error) {
             console.error("Generation error:", error);
-            return "Lo siento, tuve un problema al pensar mi respuesta. ¿Puedes repetir?";
+            // Remove the user message if generation failed
+            this.messages.pop();
+            throw new Error("Failed to generate response. Please try again.");
         }
     }
 
@@ -86,6 +102,42 @@ export class ConversationManager {
     reset() {
         this.messages = [];
         this.systemPrompt = "";
+        this.clearStorage();
+    }
+
+    saveToStorage() {
+        const data = {
+            messages: this.messages,
+            systemPrompt: this.systemPrompt,
+            timestamp: Date.now()
+        };
+        localStorage.setItem(this.storageKey, JSON.stringify(data));
+    }
+
+    loadFromStorage() {
+        const stored = localStorage.getItem(this.storageKey);
+        if (stored) {
+            try {
+                const data = JSON.parse(stored);
+                // Only load if less than 24 hours old
+                const age = Date.now() - data.timestamp;
+                if (age < 24 * 60 * 60 * 1000) {
+                    return data;
+                }
+            } catch (e) {
+                console.error('Failed to load conversation:', e);
+            }
+        }
+        return null;
+    }
+
+    clearStorage() {
+        localStorage.removeItem(this.storageKey);
+    }
+
+    restoreFromData(data) {
+        this.messages = data.messages;
+        this.systemPrompt = data.systemPrompt;
     }
 }
 

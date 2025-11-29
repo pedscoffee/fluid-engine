@@ -4,7 +4,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#6366f1">
+    <meta name="description"
+        content="Practice Spanish naturally with AI-powered conversational practice. Free, browser-based Spanish tutor with voice recognition and personalized feedback.">
+    <meta name="keywords"
+        content="Spanish practice, learn Spanish, AI tutor, conversational Spanish, Spanish speaking practice, language learning">
+    <meta name="author" content="Fluidez">
+
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Fluidez - AI-Powered Conversational Spanish Practice">
+    <meta property="og:description"
+        content="Practice Spanish naturally with AI. Free, browser-based conversational practice with voice recognition and personalized feedback.">
+    <meta property="og:url" content="https://yoursite.com">
+    <meta property="og:image" content="https://yoursite.com/assets/og-image.png">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Fluidez - AI-Powered Conversational Spanish Practice">
+    <meta name="twitter:description"
+        content="Practice Spanish naturally with AI. Free, browser-based conversational practice with voice recognition.">
+
     <title>Fluidez - Conversational Spanish Practice</title>
+    <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -58,7 +80,20 @@
                     </div>
 
                     <div class="form-group large-input">
-                        <label for="practice-goal">What do you want to practice?</label>
+                        <label for="scenario-select">Quick Scenarios</label>
+                        <select id="scenario-select" class="scenario-dropdown">
+                            <option value="">Custom (use text box below)</option>
+                            <option value="restaurant">Ordering at a Restaurant</option>
+                            <option value="doctor">At the Doctor's Office</option>
+                            <option value="interview">Job Interview</option>
+                            <option value="travel">Travel and Directions</option>
+                            <option value="shopping">Shopping</option>
+                            <option value="phone">Phone Conversation</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group large-input">
+                        <label for="practice-goal">Or describe your custom goal</label>
                         <textarea id="practice-goal"
                             placeholder="e.g., 'Subjunctive commands', 'Ordering at a restaurant', 'Talking about my weekend'"></textarea>
                         <p class="hint">Leave blank for general conversation.</p>
@@ -158,7 +193,6 @@
             </div>
         </div>
 
-        <!-- Settings Modal -->
         <div id="settings-modal" class="modal hidden">
             <div class="modal-content">
                 <h3>Settings</h3>
@@ -168,6 +202,19 @@
                         <input type="checkbox" id="translation-toggle">
                         <span class="slider round"></span>
                     </label>
+                </div>
+                <div class="setting-item">
+                    <label for="mute-toggle">Mute Voice</label>
+                    <label class="switch">
+                        <input type="checkbox" id="mute-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <label for="voice-select">Voice</label>
+                    <select id="voice-select" class="voice-dropdown">
+                        <option value="">Default</option>
+                    </select>
                 </div>
                 <div class="modal-actions">
                     <button id="close-settings-btn" class="btn-primary">Done</button>

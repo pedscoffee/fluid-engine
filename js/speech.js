@@ -43,6 +43,11 @@ export class SpeechService {
         if (this.isRecording) return;
 
         try {
+            // Check microphone permission first
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                throw new Error('Microphone not supported in this browser');
+            }
+
             this.mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
             this.audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
             this.audioInput = this.audioContext.createMediaStreamSource(this.mediaStream);
@@ -63,7 +68,13 @@ export class SpeechService {
             console.log("Recording started");
         } catch (error) {
             console.error("Error starting recording:", error);
-            alert("Could not access microphone. Please allow permissions.");
+            if (error.name === 'NotAllowedError') {
+                throw new Error('Microphone access denied. Please allow microphone permissions to use voice input.');
+            } else if (error.name === 'NotFoundError') {
+                throw new Error('No microphone found. Please connect a microphone to use voice input.');
+            } else {
+                throw new Error('Could not access microphone: ' + error.message);
+            }
         }
     }
 
@@ -111,9 +122,15 @@ export class SpeechService {
         }
     }
 
-    speak(text) {
+    speak(text, preferences = {}) {
         return new Promise((resolve, reject) => {
             if (!text) {
+                resolve();
+                return;
+            }
+
+            // Check if muted
+            if (preferences.muted) {
                 resolve();
                 return;
             }
@@ -128,12 +145,21 @@ export class SpeechService {
 
             // Try to find a good voice
             const voices = window.speechSynthesis.getVoices();
-            // Prefer Google Español or Microsoft
-            const preferredVoice = voices.find(v => v.lang.includes('es') && (v.name.includes('Google') || v.name.includes('Microsoft'))) ||
-                voices.find(v => v.lang.includes('es'));
+            const spanishVoices = voices.filter(v => v.lang.includes('es'));
 
-            if (preferredVoice) {
-                utterance.voice = preferredVoice;
+            // Use selected voice if specified
+            if (preferences.selectedVoice !== undefined && preferences.selectedVoice !== '') {
+                const selectedIndex = parseInt(preferences.selectedVoice);
+                if (spanishVoices[selectedIndex]) {
+                    utterance.voice = spanishVoices[selectedIndex];
+                }
+            } else {
+                // Prefer Google Español or Microsoft
+                const preferredVoice = spanishVoices.find(v => v.name.includes('Google') || v.name.includes('Microsoft')) ||
+                    spanishVoices[0];
+                if (preferredVoice) {
+                    utterance.voice = preferredVoice;
+                }
             }
 
             utterance.onend = () => resolve();

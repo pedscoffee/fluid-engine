@@ -794,6 +794,8 @@ input:checked+.slider:before {
     height: 100%;
     position: relative;
     transition: width 0.3s ease;
+    min-width: 0;
+    /* Allow shrinking */
 }
 
 /* Side Panel */
@@ -805,6 +807,8 @@ input:checked+.slider:before {
     flex-direction: column;
     transition: transform 0.3s ease, width 0.3s ease, opacity 0.3s ease;
     z-index: 20;
+    flex-shrink: 0;
+    /* Prevent shrinking */
 }
 
 .translation-panel.collapsed {

@@ -439,15 +439,15 @@ export function initUI() {
         let spanishText = text;
         let englishText = null;
 
-        // Try standard [EN] format first
-        const enMatch = text.match(/^([\s\S]*?)\n\[EN\]\s*(.+)$/i);
+        // Try standard [EN] format first (inline or newline)
+        const enMatch = text.match(/^([\s\S]*?)\[EN\]\s*(.+)$/i);
         if (enMatch) {
             spanishText = enMatch[1].trim();
             englishText = enMatch[2].trim();
         }
         // Try "Translation:" format
         else {
-            const transMatch = text.match(/^([\s\S]*?)\n(?:Translation|English):\s*(.+)$/i);
+            const transMatch = text.match(/^([\s\S]*?)(?:\n|\s)(?:Translation|English):\s*(.+)$/i);
             if (transMatch) {
                 spanishText = transMatch[1].trim();
                 englishText = transMatch[2].trim();
@@ -471,14 +471,12 @@ export function initUI() {
             const placeholder = translationContent.querySelector('.placeholder');
             if (placeholder) placeholder.remove();
 
-            // Prepend or append? Usually latest at bottom, but maybe top for visibility?
-            // Let's append to keep history sync
+            // Append to keep history sync
             translationContent.appendChild(p);
             translationContent.scrollTop = translationContent.scrollHeight;
 
-            // Auto-open panel if preference says so (or just keep user state)
-            // For now, we respect manual toggle, but maybe open on first translation?
-            if (translationPanel.classList.contains('collapsed') && prefs.showTranslation) {
+            // Auto-open panel if it's collapsed (on desktop we might want it always open)
+            if (translationPanel.classList.contains('collapsed')) {
                 toggleSidePanel(true);
             }
         }
@@ -513,11 +511,11 @@ export function initUI() {
 
         // Strip English translation before speaking
         let textToSpeak = response;
-        const enMatch = response.match(/^([\s\S]*?)\n\[EN\]\s*(.+)$/i);
+        const enMatch = response.match(/^([\s\S]*?)\[EN\]\s*(.+)$/i);
         if (enMatch) {
             textToSpeak = enMatch[1].trim();
         } else {
-            const transMatch = response.match(/^([\s\S]*?)\n(?:Translation|English):\s*(.+)$/i);
+            const transMatch = response.match(/^([\s\S]*?)(?:\n|\s)(?:Translation|English):\s*(.+)$/i);
             if (transMatch) {
                 textToSpeak = transMatch[1].trim();
             }

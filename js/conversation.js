@@ -50,10 +50,7 @@ export class ConversationManager {
         const builder = new SpanishTutorPromptBuilder(userPreferences);
         this.systemPrompt = builder.build();
 
-        // If translation is enabled, add translation instructions
-        if (userPreferences.showTranslation) {
-            this.systemPrompt += "\n\nRESPONSE FORMAT RULE:\nYou MUST provide an English translation for every response.\nFormat your response exactly like this:\n[Spanish text here]\n[EN] [English translation here]";
-        }
+        // Translation is now handled by a separate pass, so no system prompt rule needed.
 
         this.messages = [
             { role: "system", content: this.systemPrompt }
@@ -77,12 +74,40 @@ export class ConversationManager {
             const reply = completion.choices[0].message.content;
             this.messages.push({ role: "assistant", content: reply });
 
-            return reply;
+            return {
+                spanish: reply,
+                english: null // Will be populated if translation is requested
+            };
         } catch (error) {
             console.error("Generation error:", error);
             // Remove the user message if generation failed
             this.messages.pop();
             throw new Error("Failed to generate response. Please try again.");
+        }
+    }
+
+    async translateText(text) {
+        if (!this.isInitialized) return null;
+
+        try {
+            // Create a temporary separate chat for translation to avoid polluting the main context
+            // or just use a simple completion if the API supports it. 
+            // We'll use a fresh messages array for this task.
+            const translationMessages = [
+                { role: "system", content: "You are a professional translator. Translate the following Spanish text to English. Output ONLY the English translation, nothing else." },
+                { role: "user", content: text }
+            ];
+
+            const completion = await this.engine.chat.completions.create({
+                messages: translationMessages,
+                temperature: 0.3, // Lower temperature for accurate translation
+                max_tokens: 256,
+            });
+
+            return completion.choices[0].message.content.trim();
+        } catch (error) {
+            console.error("Translation error:", error);
+            return null;
         }
     }
 

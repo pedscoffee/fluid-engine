@@ -44,21 +44,19 @@ export class SpanishTutorPromptBuilder {
 
         prompt += "INSTRUCTIONS:\n";
         prompt += "1. Speak mostly in simple Spanish.\n";
-        prompt += "2. Provide English subtitles for EVERYTHING you say, EXCEPT for the target vocabulary words listed below.\n";
-        prompt += "3. Keep sentences very short and simple (Subject-Verb-Object).\n";
-        prompt += "4. Guide the conversation to use the target vocabulary naturally.\n\n";
+        prompt += "2. Keep sentences very short and simple (Subject-Verb-Object).\n";
+        prompt += "3. Guide the conversation to use the target vocabulary naturally.\n\n";
 
         if (this.preferences.targetVocabulary) {
-            prompt += "TARGET VOCABULARY (Keep these in Spanish ONLY - NO translation):\n";
+            prompt += "TARGET VOCABULARY:\n";
             prompt += `${this.preferences.targetVocabulary}\n\n`;
         }
 
         prompt += "EXAMPLE INTERACTION:\n";
         prompt += "User: Hola\n";
-        prompt += "You: ¡Hola! ¿Cómo estás? [EN] Hello! How are you?\n";
+        prompt += "You: ¡Hola! ¿Cómo estás?\n";
         prompt += "User: Bien\n";
-        prompt += "You: Me alegro. ¿Te gusta el *gato*? [EN] I'm glad. Do you like the *gato*?\n";
-        prompt += "(Note: 'gato' was a target word, so it remained in Spanish while the rest was translated)\n";
+        prompt += "You: Me alegro. ¿Te gusta el *gato*?\n";
 
         return prompt;
     }

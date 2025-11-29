@@ -435,50 +435,30 @@ export function initUI() {
         const div = document.createElement('div');
         div.className = `message ${sender}`;
 
-        // Parse translation if present
-        let spanishText = text;
-        let englishText = null;
-
-        // Try standard [EN] format first (inline or newline)
-        const enMatch = text.match(/^([\s\S]*?)\[EN\]\s*(.+)$/i);
-        if (enMatch) {
-            spanishText = enMatch[1].trim();
-            englishText = enMatch[2].trim();
-        }
-        // Try "Translation:" format
-        else {
-            const transMatch = text.match(/^([\s\S]*?)(?:\n|\s)(?:Translation|English):\s*(.+)$/i);
-            if (transMatch) {
-                spanishText = transMatch[1].trim();
-                englishText = transMatch[2].trim();
-            }
-        }
-
-        div.textContent = spanishText;
+        div.textContent = text;
         chatContainer.appendChild(div);
         scrollToBottom();
+    }
 
-        // Handle Translation Side Panel
-        if (sender === 'system' && englishText) {
-            // Update side panel
-            const p = document.createElement('p');
-            p.style.marginBottom = '1rem';
-            p.style.borderBottom = '1px solid var(--surface-light)';
-            p.style.paddingBottom = '0.5rem';
-            p.textContent = englishText;
+    function updateSidePanel(englishText) {
+        if (!englishText) return;
 
-            // Clear placeholder if it exists
-            const placeholder = translationContent.querySelector('.placeholder');
-            if (placeholder) placeholder.remove();
+        const p = document.createElement('p');
+        p.style.marginBottom = '1rem';
+        p.style.borderBottom = '1px solid var(--surface-light)';
+        p.style.paddingBottom = '0.5rem';
+        p.textContent = englishText;
 
-            // Append to keep history sync
-            translationContent.appendChild(p);
-            translationContent.scrollTop = translationContent.scrollHeight;
+        // Clear placeholder if it exists
+        const placeholder = translationContent.querySelector('.placeholder');
+        if (placeholder) placeholder.remove();
 
-            // Auto-open panel if it's collapsed (on desktop we might want it always open)
-            if (translationPanel.classList.contains('collapsed')) {
-                toggleSidePanel(true);
-            }
+        translationContent.appendChild(p);
+        translationContent.scrollTop = translationContent.scrollHeight;
+
+        // Auto-open panel if it's collapsed
+        if (translationPanel.classList.contains('collapsed')) {
+            toggleSidePanel(true);
         }
     }
 
@@ -497,31 +477,32 @@ export function initUI() {
         scrollToBottom();
 
         const conversationManager = await getConversationManager();
-        const response = await conversationManager.generateResponse(text);
+        const responseObj = await conversationManager.generateResponse(text);
 
         // Remove typing indicator
         typingIndicator.remove();
 
-        addMessage(response, 'system');
+        // Pass 1: Display Spanish immediately
+        addMessage(responseObj.spanish, 'system');
 
-        // Save conversation after each exchange
+        // Save conversation
         conversationManager.saveToStorage();
 
         const speechService = await getSpeechService();
 
-        // Strip English translation before speaking
-        let textToSpeak = response;
-        const enMatch = response.match(/^([\s\S]*?)\[EN\]\s*(.+)$/i);
-        if (enMatch) {
-            textToSpeak = enMatch[1].trim();
-        } else {
-            const transMatch = response.match(/^([\s\S]*?)(?:\n|\s)(?:Translation|English):\s*(.+)$/i);
-            if (transMatch) {
-                textToSpeak = transMatch[1].trim();
-            }
-        }
+        // Speak Spanish immediately
+        speechService.speak(responseObj.spanish, preferences.get());
 
-        await speechService.speak(textToSpeak, preferences.get());
+        // Pass 2: Translate asynchronously if enabled
+        if (preferences.get().showTranslation) {
+            // Show a loading state in side panel?
+            // For now just fetch and append
+            conversationManager.translateText(responseObj.spanish).then(translation => {
+                if (translation) {
+                    updateSidePanel(translation);
+                }
+            });
+        }
     }
 
     async function checkForSavedSession() {

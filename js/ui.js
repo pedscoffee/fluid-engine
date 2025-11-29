@@ -41,7 +41,6 @@ export function initUI() {
     const sendBtn = document.getElementById('send-btn');
     const clearChatBtn = document.getElementById('clear-chat-btn');
     const settingsModal = document.getElementById('settings-modal');
-    const translationToggle = document.getElementById('translation-toggle');
     const muteToggle = document.getElementById('mute-toggle');
     const voiceSelect = document.getElementById('voice-select');
     const closeSettingsBtn = document.getElementById('close-settings-btn');
@@ -72,9 +71,6 @@ export function initUI() {
         });
     }
 
-    if (prefs.showTranslation !== undefined) {
-        translationToggle.checked = prefs.showTranslation;
-    }
     if (prefs.muted !== undefined) {
         muteToggle.checked = prefs.muted;
     }
@@ -159,7 +155,6 @@ export function initUI() {
             selectedGrammar: selectedGrammar,
             customInstructions: practiceGoalInput.value.trim(),
             // Keep existing prefs
-            showTranslation: translationToggle.checked,
             muted: muteToggle.checked
         };
 
@@ -221,14 +216,12 @@ export function initUI() {
             // Speak greeting (async, don't await blocking UI)
             speechService.speak(greetingObj.spanish, newPrefs);
 
-            // Translate greeting if enabled
-            if (newPrefs.showTranslation) {
-                conversationManager.translateText(greetingObj.spanish).then(translation => {
-                    if (translation) {
-                        updateSidePanel(translation);
-                    }
-                });
-            }
+            // Always translate greeting
+            conversationManager.translateText(greetingObj.spanish).then(translation => {
+                if (translation) {
+                    updateSidePanel(translation);
+                }
+            });
 
         } catch (error) {
             console.error(error);
@@ -382,10 +375,6 @@ export function initUI() {
         }
     });
 
-    translationToggle.addEventListener('change', () => {
-        preferences.update({ showTranslation: translationToggle.checked });
-    });
-
     muteToggle.addEventListener('change', () => {
         preferences.update({ muted: muteToggle.checked });
     });
@@ -501,16 +490,12 @@ export function initUI() {
         // Speak Spanish immediately
         speechService.speak(responseObj.spanish, preferences.get());
 
-        // Pass 2: Translate asynchronously if enabled
-        if (preferences.get().showTranslation) {
-            // Show a loading state in side panel?
-            // For now just fetch and append
-            conversationManager.translateText(responseObj.spanish).then(translation => {
-                if (translation) {
-                    updateSidePanel(translation);
-                }
-            });
-        }
+        // Pass 2: Always translate asynchronously
+        conversationManager.translateText(responseObj.spanish).then(translation => {
+            if (translation) {
+                updateSidePanel(translation);
+            }
+        });
     }
 
     async function checkForSavedSession() {

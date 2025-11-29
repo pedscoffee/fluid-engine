@@ -1,15 +1,15 @@
 :root {
-    /* Colors */
-    --primary: #6366f1;
-    --primary-hover: #4f46e5;
-    --primary-light: #e0e7ff;
-    --background: #0f172a;
-    --surface: #1e293b;
-    --surface-light: #334155;
-    --text: #f8fafc;
-    --text-muted: #94a3b8;
-    --accent: #10b981;
-    --error: #ef4444;
+    /* Botanical Sage Green Color Palette */
+    --primary: #8B9D83;
+    --primary-hover: #6B7D63;
+    --primary-light: #E8EDE6;
+    --background: #F5F3EE;
+    --surface: #E8EBE6;
+    --surface-light: #D5DBD0;
+    --text: #2C3326;
+    --text-muted: #6B7465;
+    --accent: #7A9D76;
+    --error: #C87A5F;
 
     /* Spacing */
     --spacing-xs: 0.25rem;
@@ -149,11 +149,12 @@ body {
 
 #setup-screen .container {
     padding: var(--spacing-xl);
+    padding-top: calc(var(--spacing-xl) * 2);
     display: flex;
     flex-direction: column;
     min-height: 100%;
     /* Allow growing */
-    justify-content: center;
+    justify-content: flex-start;
     gap: var(--spacing-xl);
 }
 
@@ -245,9 +246,10 @@ textarea:focus {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: rgba(15, 23, 42, 0.8);
+    background-color: rgba(245, 243, 238, 0.95);
     backdrop-filter: blur(10px);
     z-index: 10;
+    border-bottom: 1px solid var(--surface-light);
 }
 
 .status-indicator {

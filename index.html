@@ -65,21 +65,61 @@
                 </header>
 
                 <div class="setup-form">
+                    <!-- Mode Selection -->
                     <div class="form-group">
-                        <label>I am a(n)</label>
-                        <div class="segmented-control">
-                            <input type="radio" name="skill-level" value="beginner" id="lvl-beginner">
-                            <label for="lvl-beginner">Beginner</label>
+                        <label>Practice Mode</label>
+                        <div class="segmented-control mode-selector">
+                            <input type="radio" name="mode" value="beginner" id="mode-beginner">
+                            <label for="mode-beginner">Beginner</label>
 
-                            <input type="radio" name="skill-level" value="intermediate" id="lvl-intermediate" checked>
-                            <label for="lvl-intermediate">Intermediate</label>
+                            <input type="radio" name="mode" value="intermediate" id="mode-intermediate" checked>
+                            <label for="mode-intermediate">Intermediate</label>
 
-                            <input type="radio" name="skill-level" value="advanced" id="lvl-advanced">
-                            <label for="lvl-advanced">Advanced</label>
+                            <input type="radio" name="mode" value="advanced" id="mode-advanced">
+                            <label for="mode-advanced">Advanced</label>
                         </div>
                     </div>
 
-                    <div class="form-group large-input">
+                    <!-- Beginner Mode Inputs -->
+                    <div id="beginner-inputs" class="mode-inputs hidden">
+                        <div class="form-group large-input">
+                            <label for="vocab-list">Target Vocabulary (Optional)</label>
+                            <textarea id="vocab-list"
+                                placeholder="Enter words or phrases you want to practice, separated by commas. e.g., 'gato, perro, la casa'"></textarea>
+                            <p class="hint">The AI will use English subtitles but keep these words in Spanish.</p>
+                        </div>
+                    </div>
+
+                    <!-- Intermediate Mode Inputs -->
+                    <div id="intermediate-inputs" class="mode-inputs">
+                        <div class="form-group">
+                            <label>Grammar Focus</label>
+                            <div class="grammar-grid">
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="grammar" value="present"> Presente
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="grammar" value="preterite"> Pretérito
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="grammar" value="imperfect"> Imperfecto
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="grammar" value="future"> Futuro
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="grammar" value="subjunctive"> Subjuntivo
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Advanced/Shared Inputs -->
+                    <div id="advanced-inputs" class="mode-inputs hidden">
+                        <!-- Advanced uses the standard scenario/custom goal inputs -->
+                    </div>
+
+                    <div class="form-group large-input" id="shared-scenario-inputs">
                         <label for="scenario-select">Quick Scenarios</label>
                         <select id="scenario-select" class="scenario-dropdown">
                             <option value="">Custom (use text box below)</option>

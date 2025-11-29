@@ -28,6 +28,15 @@ export function initUI() {
     const adjustInput = document.getElementById('adjust-input');
     const practiceGoalInput = document.getElementById('practice-goal');
     const scenarioSelect = document.getElementById('scenario-select');
+
+    // Mode Inputs
+    const modeRadios = document.querySelectorAll('input[name="mode"]');
+    const beginnerInputs = document.getElementById('beginner-inputs');
+    const intermediateInputs = document.getElementById('intermediate-inputs');
+    const advancedInputs = document.getElementById('advanced-inputs');
+    const vocabListInput = document.getElementById('vocab-list');
+    const sharedScenarioInputs = document.getElementById('shared-scenario-inputs');
+
     const chatInput = document.getElementById('chat-input');
     const sendBtn = document.getElementById('send-btn');
     const clearChatBtn = document.getElementById('clear-chat-btn');
@@ -38,10 +47,23 @@ export function initUI() {
     const closeSettingsBtn = document.getElementById('close-settings-btn');
 
     // Initialize inputs with saved prefs
-    if (prefs.skillLevel) {
-        const el = document.querySelector(`input[name="skill-level"][value="${prefs.skillLevel}"]`);
-        if (el) el.checked = true;
+    if (prefs.mode) {
+        const el = document.querySelector(`input[name="mode"][value="${prefs.mode}"]`);
+        if (el) {
+            el.checked = true;
+            updateModeVisibility(prefs.mode);
+        }
     }
+    if (prefs.targetVocabulary) {
+        vocabListInput.value = prefs.targetVocabulary;
+    }
+    if (prefs.selectedGrammar) {
+        prefs.selectedGrammar.forEach(g => {
+            const el = document.querySelector(`input[name="grammar"][value="${g}"]`);
+            if (el) el.checked = true;
+        });
+    }
+
     if (prefs.showTranslation !== undefined) {
         translationToggle.checked = prefs.showTranslation;
     }
@@ -76,6 +98,32 @@ export function initUI() {
     // Check for saved session on load
     checkForSavedSession();
 
+    // Mode switching handler
+    modeRadios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            updateModeVisibility(e.target.value);
+        });
+    });
+
+    function updateModeVisibility(mode) {
+        // Hide all first
+        beginnerInputs.classList.add('hidden');
+        intermediateInputs.classList.add('hidden');
+        advancedInputs.classList.add('hidden');
+        sharedScenarioInputs.classList.add('hidden');
+
+        // Show selected
+        if (mode === 'beginner') {
+            beginnerInputs.classList.remove('hidden');
+        } else if (mode === 'intermediate') {
+            intermediateInputs.classList.remove('hidden');
+            sharedScenarioInputs.classList.remove('hidden');
+        } else if (mode === 'advanced') {
+            advancedInputs.classList.remove('hidden');
+            sharedScenarioInputs.classList.remove('hidden');
+        }
+    }
+
     // Scenario selection handler
     scenarioSelect.addEventListener('change', () => {
         const selectedScenario = scenarioSelect.value;
@@ -89,17 +137,17 @@ export function initUI() {
     // Event Listeners
     startBtn.addEventListener('click', async () => {
         // 1. Gather preferences
-        const skillLevel = document.querySelector('input[name="skill-level"]:checked').value;
-        const customGoal = practiceGoalInput.value.trim();
-
-        // Parse natural language goal
-        const parsed = SpanishTutorPromptBuilder.parseNaturalInstruction(customGoal);
+        const selectedMode = document.querySelector('input[name="mode"]:checked').value;
+        const selectedGrammar = Array.from(document.querySelectorAll('input[name="grammar"]:checked')).map(cb => cb.value);
 
         const newPrefs = {
-            skillLevel,
-            grammarFocus: parsed.grammarFocus,
-            vocabularyFocus: parsed.vocabularyFocus,
-            customInstructions: parsed.customInstructions
+            mode: selectedMode,
+            targetVocabulary: vocabListInput.value.trim(),
+            selectedGrammar: selectedGrammar,
+            customInstructions: practiceGoalInput.value.trim(),
+            // Keep existing prefs
+            showTranslation: translationToggle.checked,
+            muted: muteToggle.checked
         };
 
         preferences.update(newPrefs);
@@ -328,13 +376,30 @@ export function initUI() {
         const div = document.createElement('div');
         div.className = `message ${sender}`;
 
-        // Parse translation if present (format: "Spanish text\n[EN] English translation")
-        const translationMatch = text.match(/^([\s\S]*?)\n\[EN\]\s*(.+)$/i);
+        // Parse translation if present
+        // Matches:
+        // 1. "Spanish text\n[EN] English translation"
+        // 2. "Spanish text\nTranslation: English translation"
+        // 3. "Spanish text (English translation)"
+        let spanishText = text;
+        let englishText = null;
 
-        if (translationMatch && sender === 'system') {
-            const spanishText = translationMatch[1].trim();
-            const englishText = translationMatch[2].trim();
+        // Try standard [EN] format first
+        const enMatch = text.match(/^([\s\S]*?)\n\[EN\]\s*(.+)$/i);
+        if (enMatch) {
+            spanishText = enMatch[1].trim();
+            englishText = enMatch[2].trim();
+        }
+        // Try "Translation:" format
+        else {
+            const transMatch = text.match(/^([\s\S]*?)\n(?:Translation|English):\s*(.+)$/i);
+            if (transMatch) {
+                spanishText = transMatch[1].trim();
+                englishText = transMatch[2].trim();
+            }
+        }
 
+        if (englishText && sender === 'system') {
             div.classList.add('has-translation');
             div.textContent = spanishText;
 

@@ -17,7 +17,10 @@ export class UserPreferences {
             conversationStyle: 'natural',
             showTranslation: false,
             muted: false,
-            selectedVoice: ''
+            selectedVoice: '',
+            mode: 'intermediate',
+            targetVocabulary: '',
+            selectedGrammar: []
         };
     }
 

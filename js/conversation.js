@@ -52,7 +52,7 @@ export class ConversationManager {
 
         // If translation is enabled, add translation instructions
         if (userPreferences.showTranslation) {
-            this.systemPrompt += "\n\nIMPORTANT: After each Spanish response, provide an English translation on a new line starting with '[EN]'. Format: Your Spanish response\n[EN] English translation";
+            this.systemPrompt += "\n\nRESPONSE FORMAT RULE:\nYou MUST provide an English translation for every response.\nFormat your response exactly like this:\n[Spanish text here]\n[EN] [English translation here]";
         }
 
         this.messages = [

@@ -1,22 +1,14 @@
 :root {
     /* Colors */
-    /* Colors */
-    --primary: #6ac1b8;
-    /* Second Color */
-    --primary-hover: #58a098;
-    --primary-light: #bfe9db;
-    /* Third Color */
-    --background: #07588a;
-    /* First Color */
-    --surface: #054065;
-    /* Darker shade of First Color for contrast */
-    --surface-light: #0969a2;
-    /* Lighter shade of First Color */
-    --text: #e1f6f4;
-    /* Fourth Color */
-    --text-muted: #bfe9db;
-    /* Third Color */
-    --accent: #6ac1b8;
+    --primary: #6366f1;
+    --primary-hover: #4f46e5;
+    --primary-light: #e0e7ff;
+    --background: #0f172a;
+    --surface: #1e293b;
+    --surface-light: #334155;
+    --text: #f8fafc;
+    --text-muted: #94a3b8;
+    --accent: #10b981;
     --error: #ef4444;
 
     /* Spacing */
@@ -161,8 +153,7 @@ body {
     flex-direction: column;
     min-height: 100%;
     /* Allow growing */
-    justify-content: flex-start;
-    /* Fix top cutoff */
+    justify-content: center;
     gap: var(--spacing-xl);
 }
 

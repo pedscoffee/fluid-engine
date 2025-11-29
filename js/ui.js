@@ -41,7 +41,7 @@ export function initUI() {
     const sendBtn = document.getElementById('send-btn');
     const clearChatBtn = document.getElementById('clear-chat-btn');
     const settingsModal = document.getElementById('settings-modal');
-    // const translationToggle = document.getElementById('translation-toggle'); // Removed
+    const translationToggle = document.getElementById('translation-toggle');
     const muteToggle = document.getElementById('mute-toggle');
     const voiceSelect = document.getElementById('voice-select');
     const closeSettingsBtn = document.getElementById('close-settings-btn');
@@ -72,9 +72,9 @@ export function initUI() {
         });
     }
 
-    // if (prefs.showTranslation !== undefined) {
-    //     translationToggle.checked = prefs.showTranslation;
-    // }
+    if (prefs.showTranslation !== undefined) {
+        translationToggle.checked = prefs.showTranslation;
+    }
     if (prefs.muted !== undefined) {
         muteToggle.checked = prefs.muted;
     }
@@ -382,9 +382,9 @@ export function initUI() {
         }
     });
 
-    // translationToggle.addEventListener('change', () => {
-    //     preferences.update({ showTranslation: translationToggle.checked });
-    // });
+    translationToggle.addEventListener('change', () => {
+        preferences.update({ showTranslation: translationToggle.checked });
+    });
 
     muteToggle.addEventListener('change', () => {
         preferences.update({ muted: muteToggle.checked });

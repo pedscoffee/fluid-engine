@@ -40,21 +40,45 @@ export const vocabularyTemplates = {
 
 export const skillLevelTemplates = {
     beginner: {
-        language: "Use simple, common vocabulary. Speak slowly and clearly. Use primarily present tense. Keep sentences short and clear.",
-        feedback: "Be very encouraging. Celebrate small wins. Provide translations when user seems stuck.",
-        complexity: "Avoid complex grammar structures. Stick to basic sentence patterns.",
+        label: "Beginner (A1)",
+        language: "Use very simple, familiar, everyday expressions. Speak slowly. Use basic sentence structures (Subject-Verb-Object).",
+        feedback: "Be extremely encouraging. Correct only major errors that prevent understanding. Provide translations for most things.",
+        complexity: "Can understand and use familiar, everyday expressions and basic phrases. Can introduce themselves and others, ask and answer basic personal questions."
+    },
+
+    elementary: {
+        label: "Elementary (A2)",
+        language: "Use simple sentences and common expressions related to immediate relevance (shopping, family, employment). Speak clearly.",
+        feedback: "Encourage communication over accuracy. Gently correct basic grammar.",
+        complexity: "Can communicate in simple and routine tasks and exchange information on familiar topics. Can understand sentences and common expressions."
     },
 
     intermediate: {
-        language: "Use varied vocabulary and mix of tenses. Introduce some idiomatic expressions. Moderate complexity.",
-        feedback: "Balance encouragement with constructive corrections. Introduce more advanced concepts gently.",
-        complexity: "Introduce subjunctive, conditional, and more complex structures.",
+        label: "Intermediate (B1)",
+        language: "Use connected text on familiar topics. Introduce some variety in tenses. Speak at a moderate pace.",
+        feedback: "Correct errors that distract from meaning. Encourage longer sentences.",
+        complexity: "Can understand the main points of clear standard input on familiar matters. Can produce simple, connected text on familiar topics and deal with most travel situations."
+    },
+
+    upperIntermediate: {
+        label: "Upper-Intermediate (B2)",
+        language: "Use complex text and abstract topics. Speak with a degree of fluency and spontaneity. Use native-like expressions.",
+        feedback: "Focus on nuance and natural phrasing. Correct repeated errors.",
+        complexity: "Can understand the main ideas of complex text, including abstract topics. Can communicate with a degree of fluency and spontaneity that makes regular interaction with native speakers possible without strain."
     },
 
     advanced: {
-        language: "Speak naturally at native level. Use idioms, complex structures, varied vocabulary.",
-        feedback: "Focus on nuance, natural phrasing, and advanced usage. Challenge the user.",
-        complexity: "Full grammatical complexity. Discuss abstract topics.",
+        label: "Advanced (C1)",
+        language: "Use a wide range of demanding, longer texts. Recognize implicit meaning. Express ideas fluently and spontaneously.",
+        feedback: "Focus on precision and style. Challenge the user with complex topics.",
+        complexity: "Can understand a wide range of demanding, longer texts and recognize implicit meaning. Can express ideas fluently and spontaneously and use the language flexibly and effectively."
+    },
+
+    proficiency: {
+        label: "Proficiency (C2)",
+        language: "Use precise, appropriate, and easy expression equating to an educated native speaker. Express spontaneously, very fluently, and precisely.",
+        feedback: "Correct only subtle unnatural phrasing. Treat the user as a peer.",
+        complexity: "Has a level of precision, appropriateness, and ease that effectively equates to that of an educated native speaker. Can understand virtually everything heard or read."
     }
 };
 

@@ -11,6 +11,7 @@ export class UserPreferences {
         }
         return {
             // Core settings
+            proficiencyLevel: 'intermediate', // 'beginner', 'elementary', 'intermediate', 'upperIntermediate', 'advanced', 'proficiency'
             skillLevel: 'intermediate', // kept for potential future use or internal logic
 
             // Focus Toggles

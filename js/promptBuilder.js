@@ -6,88 +6,57 @@ export class SpanishTutorPromptBuilder {
     }
 
     build() {
-        let prompt = "";
+        // Base Role & Goal
+        let prompt = "ROLE: You are a helpful, patient, and natural Spanish tutor.\n";
+        prompt += "GOAL: Engage the user in conversation to help them practice Spanish. Adapt to their level and requests.\n\n";
 
-        switch (this.preferences.mode) {
-            case 'beginner':
-                prompt = this.buildBeginnerPrompt();
-                break;
-            case 'intermediate':
-                prompt = this.buildIntermediatePrompt();
-                break;
-            case 'advanced':
-            default:
-                prompt = this.buildAdvancedPrompt();
-                break;
-        }
+        // Output Format - CRITICAL
+        prompt += "OUTPUT FORMAT (STRICT):\n";
+        prompt += "1. You must ALWAYS provide your response in Spanish first, followed by the English translation.\n";
+        prompt += "2. Use the following format EXACTLY:\n";
+        prompt += "   [ES] {Your Spanish response here}\n";
+        prompt += "   [EN] {English translation of your response}\n";
+        prompt += "3. Do NOT put stars (*) around vocabulary words. Just use them naturally.\n\n";
 
-        // Custom Instructions (Natural Language) - Moved to end for higher priority
-        if (this.preferences.customInstructions) {
-            prompt += "\nUSER CUSTOM REQUEST (PRIORITY):\n";
-            prompt += `The user specifically asked: "${this.preferences.customInstructions}".\nADAPT YOUR CONVERSATION TO FULFILL THIS REQUEST ABOVE ALL ELSE.\n`;
-        }
-
-        return prompt;
-    }
-
-    buildBeginnerPrompt() {
-        let prompt = "ROLE: You are a patient, encouraging Spanish tutor for a complete beginner.\n\n";
-        prompt += "GOAL: Help the user practice specific vocabulary in a very simple, controlled environment.\n\n";
-
+        // Dynamic Instructions based on Toggles
         prompt += "INSTRUCTIONS:\n";
-        prompt += "1. Speak mostly in simple Spanish.\n";
-        prompt += "2. Provide English subtitles for EVERYTHING you say, EXCEPT for the target vocabulary words listed below.\n";
-        prompt += "3. Keep sentences very short and simple (Subject-Verb-Object).\n";
-        prompt += "4. Guide the conversation to use the target vocabulary naturally.\n\n";
 
-        if (this.preferences.targetVocabulary) {
-            prompt += "TARGET VOCABULARY (Keep these in Spanish ONLY - NO translation):\n";
-            prompt += `${this.preferences.targetVocabulary}\n\n`;
+        // 1. Vocabulary Focus
+        if (this.preferences.focusVocabulary && this.preferences.targetVocabulary) {
+            prompt += "FOCUS: VOCABULARY PRACTICE\n";
+            prompt += "The user wants to practice the following words/phrases:\n";
+            prompt += `[ ${this.preferences.targetVocabulary} ]\n`;
+            prompt += "- Try to use these words naturally in your responses or ask questions that prompt the user to use them.\n";
+            prompt += "- Do not force them if it makes the conversation weird, but prioritize them.\n\n";
         }
 
-        prompt += "EXAMPLE INTERACTION:\n";
-        prompt += "User: Hola\n";
-        prompt += "You: ¡Hola! ¿Cómo estás? [EN] Hello! How are you?\n";
-        prompt += "User: Bien\n";
-        prompt += "You: Me alegro. ¿Te gusta el *gato*? [EN] I'm glad. Do you like the *gato*?\n";
-        prompt += "(Note: 'gato' was a target word, so it remained in Spanish while the rest was translated)\n";
-
-        return prompt;
-    }
-
-    buildIntermediatePrompt() {
-        let prompt = "ROLE: You are a helpful Spanish tutor focusing on grammar practice.\n\n";
-        prompt += "GOAL: Help the user practice specific grammar tenses/moods.\n\n";
-
-        prompt += "INSTRUCTIONS:\n";
-        prompt += "1. Speak naturally but focus your questions to elicit the target grammar.\n";
-        prompt += "2. If the user makes a grammar mistake in the target tense, gently correct them.\n";
-        prompt += "3. Avoid complex grammar that is not in the focus list if possible.\n\n";
-
-        if (this.preferences.selectedGrammar && this.preferences.selectedGrammar.length > 0) {
-            prompt += "GRAMMAR FOCUS (Prioritize these):\n";
+        // 2. Grammar Focus
+        if (this.preferences.focusGrammar && this.preferences.selectedGrammar && this.preferences.selectedGrammar.length > 0) {
+            prompt += "FOCUS: GRAMMAR PRACTICE\n";
+            prompt += "The user wants to practice the following grammar concepts:\n";
             this.preferences.selectedGrammar.forEach(g => prompt += `- ${g}\n`);
-            prompt += "\n";
+            prompt += "- Model these tenses/moods in your speech.\n";
+            prompt += "- Gently correct the user if they make mistakes with these specific concepts.\n\n";
         }
 
-        return prompt;
-    }
+        // 3. Scenario / Custom Goal
+        if (this.preferences.focusScenarios && this.preferences.customInstructions) {
+            prompt += "CONTEXT / SCENARIO:\n";
+            prompt += `The user wants to roleplay or discuss: "${this.preferences.customInstructions}"\n`;
+            prompt += "- Adopt a persona if appropriate for the scenario (e.g., waiter, doctor).\n";
+            prompt += "- Keep the conversation within this context.\n\n";
+        } else if (this.preferences.customInstructions) {
+            // General custom instructions without explicit scenario toggle
+            prompt += "USER REQUEST:\n";
+            prompt += `The user specifically asked: "${this.preferences.customInstructions}"\n`;
+            prompt += "- Adapt your conversation to fulfill this request.\n\n";
+        }
 
-    buildAdvancedPrompt() {
-        let prompt = baseRole + "\n\n";
-
-        // Skill Level
-        const skill = skillLevelTemplates[this.preferences.skillLevel] || skillLevelTemplates.advanced;
-        prompt += `SKILL LEVEL: Advanced/Natural\n`;
-        prompt += `- Language: ${skill.language}\n`;
-        prompt += `- Feedback: ${skill.feedback}\n`;
-        prompt += `- Complexity: ${skill.complexity}\n\n`;
-
-        // General Rules
-        prompt += "IMPORTANT RULES:\n";
-        prompt += "1. Speak ONLY in Spanish. No English unless requested.\n";
-        prompt += "2. Keep responses concise (1-3 sentences) to encourage a back-and-forth dialogue.\n";
-        prompt += "3. REFLECTIVE FEEDBACK: If the user makes a mistake, rephrase it correctly in your response naturally, or ask a clarifying question. Do not lecture.\n";
+        // General Conversation Guidelines
+        prompt += "GUIDELINES:\n";
+        prompt += "- Speak naturally and clearly.\n";
+        prompt += "- Keep responses concise (1-3 sentences) to encourage a back-and-forth dialogue.\n";
+        prompt += "- If the user makes a mistake, you can gently correct it in your response, but keep the flow going.\n";
 
         return prompt;
     }

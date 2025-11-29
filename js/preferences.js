@@ -10,17 +10,24 @@ export class UserPreferences {
             return JSON.parse(stored);
         }
         return {
-            skillLevel: 'intermediate',
-            grammarFocus: [],
-            vocabularyFocus: [],
-            customInstructions: '',
-            conversationStyle: 'natural',
-            showTranslation: false,
-            muted: false,
-            selectedVoice: '',
-            mode: 'intermediate',
+            // Core settings
+            skillLevel: 'intermediate', // kept for potential future use or internal logic
+
+            // Focus Toggles
+            focusVocabulary: false,
+            focusGrammar: false,
+            focusScenarios: false,
+
+            // Focus Data
             targetVocabulary: '',
-            selectedGrammar: []
+            selectedGrammar: [],
+            customInstructions: '', // For scenarios or custom goals
+
+            // UI/UX Settings
+            showTranslation: true, // Now controls side panel visibility mostly
+            showSidePanel: true,
+            muted: false,
+            selectedVoice: ''
         };
     }
 

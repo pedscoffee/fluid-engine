@@ -29,30 +29,54 @@ export function initUI() {
     const practiceGoalInput = document.getElementById('practice-goal');
     const scenarioSelect = document.getElementById('scenario-select');
 
-    // Mode Inputs
-    const modeRadios = document.querySelectorAll('input[name="mode"]');
-    const beginnerInputs = document.getElementById('beginner-inputs');
-    const intermediateInputs = document.getElementById('intermediate-inputs');
-    const advancedInputs = document.getElementById('advanced-inputs');
+    // Focus Toggles
+    const focusVocabToggle = document.getElementById('focus-vocab-toggle');
+    const focusGrammarToggle = document.getElementById('focus-grammar-toggle');
+    const focusScenarioToggle = document.getElementById('focus-scenario-toggle');
+
+    // Input Sections
+    const vocabInputs = document.getElementById('vocab-inputs');
+    const grammarInputs = document.getElementById('grammar-inputs');
+    const scenarioInputs = document.getElementById('scenario-inputs');
+
+    // Inputs
     const vocabListInput = document.getElementById('vocab-list');
-    const sharedScenarioInputs = document.getElementById('shared-scenario-inputs');
+    const vocabFile = document.getElementById('vocab-file');
+    // practiceGoalInput and scenarioSelect are already declared above
 
     const chatInput = document.getElementById('chat-input');
     const sendBtn = document.getElementById('send-btn');
     const clearChatBtn = document.getElementById('clear-chat-btn');
     const settingsModal = document.getElementById('settings-modal');
-    const translationToggle = document.getElementById('translation-toggle');
+    const toggleSidePanelBtn = document.getElementById('toggle-side-panel-btn');
+    const closeSidePanelBtn = document.getElementById('close-side-panel-btn');
+    const sidePanel = document.getElementById('side-panel');
+    const sidePanelContent = document.getElementById('side-panel-content');
+
+    // Settings
+    const translationToggle = document.getElementById('translation-toggle'); // Kept for legacy or specific hover preference? 
+    // Actually user wants to remove hover in preference of side panel, but we kept the toggle in settings modal in HTML?
+    // Let's assume translationToggle in settings now controls "Show English Side Panel" or we add a new one.
+    // The plan said "Add 'Show English Side Panel' toggle in Settings". 
+    // For now, let's use the on-screen toggle button for the side panel and maybe keep the settings one for "Hover" if we still support it, 
+    // or repurpose it. The user said "Collapsable side panel... I'd like the individual supports to be able to be turned on and off".
+
     const muteToggle = document.getElementById('mute-toggle');
     const voiceSelect = document.getElementById('voice-select');
     const closeSettingsBtn = document.getElementById('close-settings-btn');
 
     // Initialize inputs with saved prefs
-    if (prefs.mode) {
-        const el = document.querySelector(`input[name="mode"][value="${prefs.mode}"]`);
-        if (el) {
-            el.checked = true;
-            updateModeVisibility(prefs.mode);
-        }
+    if (prefs.focusVocabulary) {
+        focusVocabToggle.checked = true;
+        vocabInputs.classList.remove('hidden');
+    }
+    if (prefs.focusGrammar) {
+        focusGrammarToggle.checked = true;
+        grammarInputs.classList.remove('hidden');
+    }
+    if (prefs.focusScenarios) {
+        focusScenarioToggle.checked = true;
+        scenarioInputs.classList.remove('hidden');
     }
     if (prefs.targetVocabulary) {
         vocabListInput.value = prefs.targetVocabulary;
@@ -64,8 +88,12 @@ export function initUI() {
         });
     }
 
-    if (prefs.showTranslation !== undefined) {
-        translationToggle.checked = prefs.showTranslation;
+    if (prefs.showSidePanel !== undefined) {
+        if (!prefs.showSidePanel) {
+            sidePanel.classList.add('hidden');
+        } else {
+            sidePanel.classList.remove('hidden');
+        }
     }
     if (prefs.muted !== undefined) {
         muteToggle.checked = prefs.muted;
@@ -98,31 +126,59 @@ export function initUI() {
     // Check for saved session on load
     checkForSavedSession();
 
-    // Mode switching handler
-    modeRadios.forEach(radio => {
-        radio.addEventListener('change', (e) => {
-            updateModeVisibility(e.target.value);
-        });
+    // Toggle handlers
+    focusVocabToggle.addEventListener('change', () => {
+        if (focusVocabToggle.checked) vocabInputs.classList.remove('hidden');
+        else vocabInputs.classList.add('hidden');
     });
 
-    function updateModeVisibility(mode) {
-        // Hide all first
-        beginnerInputs.classList.add('hidden');
-        intermediateInputs.classList.add('hidden');
-        advancedInputs.classList.add('hidden');
-        sharedScenarioInputs.classList.add('hidden');
+    focusGrammarToggle.addEventListener('change', () => {
+        if (focusGrammarToggle.checked) grammarInputs.classList.remove('hidden');
+        else grammarInputs.classList.add('hidden');
+    });
 
-        // Show selected
-        if (mode === 'beginner') {
-            beginnerInputs.classList.remove('hidden');
-        } else if (mode === 'intermediate') {
-            intermediateInputs.classList.remove('hidden');
-            sharedScenarioInputs.classList.remove('hidden');
-        } else if (mode === 'advanced') {
-            advancedInputs.classList.remove('hidden');
-            sharedScenarioInputs.classList.remove('hidden');
-        }
-    }
+    focusScenarioToggle.addEventListener('change', () => {
+        if (focusScenarioToggle.checked) scenarioInputs.classList.remove('hidden');
+        else scenarioInputs.classList.add('hidden');
+    });
+
+    // CSV Import Handler
+    vocabFile.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const text = event.target.result;
+            // Simple CSV parse: assume comma separated, maybe newlines
+            // We want to extract words and append to textarea
+            const words = text.split(/[\n,]+/).map(w => w.trim()).filter(w => w.length > 0);
+
+            const currentText = vocabListInput.value.trim();
+            const newText = words.join(', ');
+
+            if (currentText) {
+                vocabListInput.value = currentText + ', ' + newText;
+            } else {
+                vocabListInput.value = newText;
+            }
+
+            // Reset file input
+            vocabFile.value = '';
+        };
+        reader.readAsText(file);
+    });
+
+    // Side Panel Toggles
+    toggleSidePanelBtn.addEventListener('click', () => {
+        sidePanel.classList.toggle('hidden');
+        preferences.update({ showSidePanel: !sidePanel.classList.contains('hidden') });
+    });
+
+    closeSidePanelBtn.addEventListener('click', () => {
+        sidePanel.classList.add('hidden');
+        preferences.update({ showSidePanel: false });
+    });
 
     // Scenario selection handler
     scenarioSelect.addEventListener('change', () => {
@@ -137,16 +193,19 @@ export function initUI() {
     // Event Listeners
     startBtn.addEventListener('click', async () => {
         // 1. Gather preferences
-        const selectedMode = document.querySelector('input[name="mode"]:checked').value;
         const selectedGrammar = Array.from(document.querySelectorAll('input[name="grammar"]:checked')).map(cb => cb.value);
 
         const newPrefs = {
-            mode: selectedMode,
+            focusVocabulary: focusVocabToggle.checked,
+            focusGrammar: focusGrammarToggle.checked,
+            focusScenarios: focusScenarioToggle.checked,
+
             targetVocabulary: vocabListInput.value.trim(),
             selectedGrammar: selectedGrammar,
             customInstructions: practiceGoalInput.value.trim(),
+
             // Keep existing prefs
-            showTranslation: translationToggle.checked,
+            showSidePanel: !sidePanel.classList.contains('hidden'),
             muted: muteToggle.checked
         };
 
@@ -377,43 +436,61 @@ export function initUI() {
         div.className = `message ${sender}`;
 
         // Parse translation if present
-        // Matches:
-        // 1. "Spanish text\n[EN] English translation"
-        // 2. "Spanish text\nTranslation: English translation"
-        // 3. "Spanish text (English translation)"
+        // Expected format from AI: "[ES] Spanish text... [EN] English text..."
+        // Or sometimes mixed. We want to extract the English part for the side panel.
+
         let spanishText = text;
         let englishText = null;
 
-        // Try standard [EN] format first
-        const enMatch = text.match(/^([\s\S]*?)\n\[EN\]\s*(.+)$/i);
-        if (enMatch) {
-            spanishText = enMatch[1].trim();
-            englishText = enMatch[2].trim();
-        }
-        // Try "Translation:" format
-        else {
-            const transMatch = text.match(/^([\s\S]*?)\n(?:Translation|English):\s*(.+)$/i);
-            if (transMatch) {
-                spanishText = transMatch[1].trim();
-                englishText = transMatch[2].trim();
+        // Regex to find [EN] block
+        // Matches: [ES] ... [EN] ...
+        // or just ... [EN] ...
+        const enMarker = '[EN]';
+        const esMarker = '[ES]';
+
+        if (text.includes(enMarker)) {
+            const parts = text.split(enMarker);
+            let firstPart = parts[0].trim();
+            englishText = parts[1].trim();
+
+            // Clean [ES] from first part if present
+            if (firstPart.includes(esMarker)) {
+                firstPart = firstPart.replace(esMarker, '').trim();
             }
+            spanishText = firstPart;
         }
 
-        if (englishText && sender === 'system') {
-            div.classList.add('has-translation');
-            div.textContent = spanishText;
+        // Clean up stars (*) used for emphasis/vocab if present
+        spanishText = spanishText.replace(/\*/g, '');
 
-            // Add tooltip
-            const tooltip = document.createElement('div');
-            tooltip.className = 'translation-tooltip';
-            tooltip.textContent = englishText;
-            div.appendChild(tooltip);
-        } else {
-            div.textContent = text;
-        }
-
+        div.textContent = spanishText;
         chatContainer.appendChild(div);
         scrollToBottom();
+
+        // Handle Side Panel Translation
+        if (sender === 'system' && englishText) {
+            // Add to side panel
+            const transDiv = document.createElement('div');
+            transDiv.className = 'translation-item';
+            transDiv.innerHTML = `
+                <p class="es-ref">${spanishText.substring(0, 50)}${spanishText.length > 50 ? '...' : ''}</p>
+                <p class="en-text">${englishText}</p>
+            `;
+
+            // Clear empty state if needed
+            if (sidePanelContent.querySelector('.empty-state')) {
+                sidePanelContent.innerHTML = '';
+            }
+
+            sidePanelContent.appendChild(transDiv);
+            sidePanelContent.scrollTop = sidePanelContent.scrollHeight;
+        }
+
+        // Return the parsed Spanish text for TTS usage if needed, 
+        // but actually this function is void. 
+        // We need to pass spanishText to the caller or handle TTS here.
+        // The original code handled TTS at the end of handleUserMessage.
+        return spanishText;
     }
 
     function scrollToBottom() {
@@ -436,13 +513,17 @@ export function initUI() {
         // Remove typing indicator
         typingIndicator.remove();
 
-        addMessage(response, 'system');
+        // Add message returns the spanish text now? No, I need to refactor addMessage slightly or just parse it again here?
+        // Better to have addMessage return the spanish text or just do the parsing in handleUserMessage?
+        // addMessage is used by resumeSession too.
+        // Let's make addMessage return the spanishText.
+        const spanishResponse = addMessage(response, 'system');
 
         // Save conversation after each exchange
         conversationManager.saveToStorage();
 
         const speechService = await getSpeechService();
-        await speechService.speak(response, preferences.get());
+        await speechService.speak(spanishResponse, preferences.get());
     }
 
     async function checkForSavedSession() {

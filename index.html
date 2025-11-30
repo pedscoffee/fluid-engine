@@ -40,6 +40,7 @@
         }
     }
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 
 <body>
@@ -278,6 +279,16 @@
                             placeholder="e.g., 'Focus on subjunctive mood and explain when to use it'"
                             class="tutor-custom-input hidden"></textarea>
                         <button id="tutor-apply-btn" class="btn-secondary btn-small">Apply</button>
+                        
+                        <div class="tutor-language-toggle">
+                            <label class="toggle-label">Feedback Language:</label>
+                            <div class="segmented-control small">
+                                <input type="radio" name="tutor-lang" value="english" id="lang-en" checked>
+                                <label for="lang-en">English</label>
+                                <input type="radio" name="tutor-lang" value="spanish" id="lang-es">
+                                <label for="lang-es">Spanish</label>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Tutor Chat -->

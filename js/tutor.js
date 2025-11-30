@@ -43,15 +43,20 @@ export class TutorManager {
         }
     }
 
-    async analyzeStudentMessage(studentText, instruction) {
+    async analyzeStudentMessage(studentText, instruction, language = 'english') {
         // Analyze the student's input based on specific instruction
         if (!this.isInitialized || !this.conversationManager.engine) return null;
 
         try {
+            const langDirective = language === 'spanish'
+                ? "Provide your response in Spanish."
+                : "Provide your response in English.";
+
             const systemPrompt = `You are a helpful Spanish language tutor. ${instruction}
 
 The student wrote: "${studentText}"
 
+${langDirective}
 Provide helpful feedback based on your instructions. Be concise and encouraging.`;
 
             const feedback = await this._generateTutorResponse(systemPrompt, studentText);

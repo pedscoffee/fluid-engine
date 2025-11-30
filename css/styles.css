@@ -801,6 +801,53 @@ input:checked+.slider:before {
     }
 }
 
+/* Tutor Language Toggle */
+.tutor-language-toggle {
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--surface-light);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.toggle-label {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.segmented-control.small {
+    padding: 2px;
+}
+
+.segmented-control.small label {
+    padding: 4px 8px;
+    font-size: 0.85rem;
+}
+
+/* Markdown Styles for Tutor */
+.tutor-message p {
+    margin-bottom: var(--spacing-sm);
+}
+
+.tutor-message p:last-child {
+    margin-bottom: 0;
+}
+
+.tutor-message ul,
+.tutor-message ol {
+    margin-left: var(--spacing-lg);
+    margin-bottom: var(--spacing-sm);
+}
+
+.tutor-message strong {
+    font-weight: 600;
+    color: var(--primary);
+}
+}
+}
+
 /* Conversation Layout */
 .conversation-layout {
     display: flex;

@@ -21,7 +21,9 @@ export class UserPreferences {
             targetVocabulary: '',
             selectedGrammar: [],
             darkMode: false,
-            tutorInstruction: 'translation'
+            darkMode: false,
+            tutorInstruction: 'translation',
+            tutorLanguage: 'english'
         };
     }
 

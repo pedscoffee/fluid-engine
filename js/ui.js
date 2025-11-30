@@ -91,6 +91,12 @@ export function initUI() {
         tutorPreset.value = prefs.tutorInstruction;
     }
 
+    // Initialize tutor language
+    if (prefs.tutorLanguage) {
+        const langRadio = document.querySelector(`input[name="tutor-lang"][value="${prefs.tutorLanguage}"]`);
+        if (langRadio) langRadio.checked = true;
+    }
+
     // Populate voice dropdown when voices are loaded
     function populateVoices() {
         const voices = window.speechSynthesis.getVoices();
@@ -435,6 +441,10 @@ export function initUI() {
         const tutorManager = getTutorManager();
         if (!tutorManager) return;
 
+        // Save language preference
+        const selectedLang = document.querySelector('input[name="tutor-lang"]:checked').value;
+        preferences.update({ tutorLanguage: selectedLang });
+
         const preset = tutorPreset.value;
         let instruction;
 
@@ -508,7 +518,14 @@ export function initUI() {
 
         const div = document.createElement('div');
         div.className = `tutor-message ${sender}`;
-        div.textContent = text;
+        // Use marked to render markdown content safely
+        // Since this is a local app and content comes from AI, basic marked usage is acceptable.
+        // If sender is 'user', we just show text.
+        if (sender === 'user') {
+            div.textContent = text;
+        } else {
+            div.innerHTML = marked.parse(text);
+        }
         tutorChat.appendChild(div);
         tutorChat.scrollTop = tutorChat.scrollHeight;
     }
@@ -600,8 +617,10 @@ export function initUI() {
                 // So we should only call analyzeStudentMessage if the instruction is NOT the default translation one.
 
                 const instruction = tutorManager.currentInstruction;
+                const language = preferences.get().tutorLanguage || 'english';
+
                 if (!instruction.includes("Output ONLY the translation")) {
-                    tutorManager.analyzeStudentMessage(text, instruction).then(feedback => {
+                    tutorManager.analyzeStudentMessage(text, instruction, language).then(feedback => {
                         if (feedback) {
                             addTutorMessage(feedback, 'tutor');
                         }

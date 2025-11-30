@@ -438,9 +438,20 @@ export function initUI() {
         const preset = tutorPreset.value;
         let instruction;
 
+        /* 
+           TUTOR PRESET CONFIGURATION
+           To add or remove presets:
+           1. Add/Remove option in index.html <select id="tutor-preset">
+           2. Add/Remove case below with the specific prompt instruction.
+           
+           Note: 'translation' is special - it disables student feedback and only shows teacher translation.
+           All other presets will trigger student feedback IN ADDITION to teacher translation.
+        */
         switch (preset) {
             case 'translation':
-                instruction = 'Translate the Spanish message to English. Output ONLY the translation.';
+                // This instruction is actually not used for the teacher translation (which is fixed),
+                // but it marks the mode as "translation only" so we don't trigger student analysis.
+                instruction = 'Output ONLY the translation.';
                 break;
             case 'grammar':
                 instruction = 'Analyze the student\'s Spanish message. Translate it to English and explain any grammar patterns used.';
@@ -566,19 +577,36 @@ export function initUI() {
             const currentPreset = preferences.get().tutorInstruction || 'translation';
 
             // 1. Always get translation of the AI's response (Teacher)
-            tutorManager.provideFeedback(responseObj.spanish, 'teacher').then(feedback => {
-                if (feedback) {
-                    addTutorMessage(feedback, 'tutor');
+            // This runs independently of the student feedback
+            tutorManager.translateTeacherMessage(responseObj.spanish).then(translation => {
+                if (translation) {
+                    addTutorMessage(translation, 'tutor');
                 }
             });
 
             // 2. If a specific feedback mode is selected (not just translation), get feedback on User's input (Student)
+            // This runs independently of the teacher translation
             if (currentPreset !== 'translation') {
-                tutorManager.provideFeedback(text, 'student').then(feedback => {
-                    if (feedback) {
-                        addTutorMessage(feedback, 'tutor');
-                    }
-                });
+                // We need to get the instruction text corresponding to the preset
+                // Ideally this should be stored or retrieved from a helper, but we can reconstruct it or fetch from prefs if we stored the full text.
+                // For now, we'll re-derive it or better yet, let's store the instruction text in prefs or just re-map it here.
+                // Actually, the tutorManager stores 'currentInstruction'.
+                // But 'currentInstruction' in the previous logic was set by the apply button.
+                // Let's use the tutorManager's current instruction, assuming it was set correctly by the UI.
+
+                // However, the previous logic in tutor.js used 'currentInstruction' for everything.
+                // We need to make sure 'currentInstruction' is what we want for the STUDENT analysis.
+                // The 'translation' preset sets it to a translation prompt, which we don't want for student analysis.
+                // So we should only call analyzeStudentMessage if the instruction is NOT the default translation one.
+
+                const instruction = tutorManager.currentInstruction;
+                if (!instruction.includes("Output ONLY the translation")) {
+                    tutorManager.analyzeStudentMessage(text, instruction).then(feedback => {
+                        if (feedback) {
+                            addTutorMessage(feedback, 'tutor');
+                        }
+                    });
+                }
             }
         }
     }

@@ -20,50 +20,53 @@ export class TutorManager {
         console.log("Tutor instruction set to:", instruction);
     }
 
-    async provideFeedback(message, targetType = 'user') {
-        // Called after each main conversation message
-        // Generates tutor response based on current instruction
-        if (!this.isInitialized || !this.conversationManager.engine) {
-            console.error("Tutor not initialized");
-            return null;
-        }
+    async translateTeacherMessage(teacherText) {
+        // Strictly translate the AI's response
+        if (!this.isInitialized || !this.conversationManager.engine) return null;
 
         try {
-            let systemPrompt;
-
-            // Check if strict translation is requested to avoid chatty preamble
-            if (this.currentInstruction.includes("Output ONLY the translation")) {
-                const contextIntro = targetType === 'teacher'
-                    ? "The teacher (AI) just said this:"
-                    : "The student (User) just said this:";
-
-                systemPrompt = `You are a precise translator. ${this.currentInstruction}
-                
-${contextIntro} "${message}"`;
-            } else {
-                const contextIntro = targetType === 'teacher'
-                    ? "The teacher (AI) just said this:"
-                    : "The student (User) just said this:";
-
-                systemPrompt = `You are a helpful Spanish language tutor. ${this.currentInstruction}
-
-${contextIntro} "${message}"
-
-Provide helpful feedback based on your instructions. Be concise and encouraging.`;
-            }
-
-            const tutorResponse = await this._generateTutorResponse(systemPrompt, message);
+            const systemPrompt = `You are a precise translator. Translate the Spanish text to English. Output ONLY the translation.`;
+            const translation = await this._generateTutorResponse(systemPrompt, teacherText);
 
             this.tutorMessages.push({
                 role: 'tutor',
-                content: tutorResponse,
-                context: message,
+                content: translation,
+                context: teacherText,
+                type: 'translation',
                 timestamp: Date.now()
             });
 
-            return tutorResponse;
+            return translation;
         } catch (error) {
-            console.error("Tutor feedback error:", error);
+            console.error("Teacher translation error:", error);
+            return null;
+        }
+    }
+
+    async analyzeStudentMessage(studentText, instruction) {
+        // Analyze the student's input based on specific instruction
+        if (!this.isInitialized || !this.conversationManager.engine) return null;
+
+        try {
+            const systemPrompt = `You are a helpful Spanish language tutor. ${instruction}
+
+The student wrote: "${studentText}"
+
+Provide helpful feedback based on your instructions. Be concise and encouraging.`;
+
+            const feedback = await this._generateTutorResponse(systemPrompt, studentText);
+
+            this.tutorMessages.push({
+                role: 'tutor',
+                content: feedback,
+                context: studentText,
+                type: 'feedback',
+                timestamp: Date.now()
+            });
+
+            return feedback;
+        } catch (error) {
+            console.error("Student analysis error:", error);
             return null;
         }
     }

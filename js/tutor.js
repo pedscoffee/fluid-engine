@@ -33,17 +33,17 @@ export class TutorManager {
 
             // Check if strict translation is requested to avoid chatty preamble
             if (this.currentInstruction.includes("Output ONLY the translation")) {
-                const contextIntro = targetType === 'ai'
-                    ? "The student received this message:"
-                    : "The student wrote this message:";
+                const contextIntro = targetType === 'teacher'
+                    ? "The teacher (AI) just said this:"
+                    : "The student (User) just said this:";
 
                 systemPrompt = `You are a precise translator. ${this.currentInstruction}
                 
 ${contextIntro} "${message}"`;
             } else {
-                const contextIntro = targetType === 'ai'
-                    ? "The student just received this Spanish message:"
-                    : "The student wrote this message:";
+                const contextIntro = targetType === 'teacher'
+                    ? "The teacher (AI) just said this:"
+                    : "The student (User) just said this:";
 
                 systemPrompt = `You are a helpful Spanish language tutor. ${this.currentInstruction}
 

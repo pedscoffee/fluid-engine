@@ -22,11 +22,6 @@ export function initUI() {
     const backBtn = document.getElementById('back-btn');
     const micBtn = document.getElementById('mic-btn');
     const chatContainer = document.getElementById('chat-container');
-    const adjustBtn = document.getElementById('adjust-practice-btn');
-    const adjustModal = document.getElementById('adjust-modal');
-    const cancelAdjustBtn = document.getElementById('cancel-adjust-btn');
-    const confirmAdjustBtn = document.getElementById('confirm-adjust-btn');
-    const adjustInput = document.getElementById('adjust-input');
     const practiceGoalInput = document.getElementById('practice-goal');
     const scenarioSelect = document.getElementById('scenario-select');
 
@@ -300,41 +295,7 @@ export function initUI() {
         stopListening();
     });
 
-    // Adjust Practice Modal
-    adjustBtn.addEventListener('click', () => {
-        adjustModal.classList.remove('hidden');
-        adjustInput.focus();
-    });
 
-    cancelAdjustBtn.addEventListener('click', () => {
-        adjustModal.classList.add('hidden');
-    });
-
-    confirmAdjustBtn.addEventListener('click', async () => {
-        const instruction = adjustInput.value.trim();
-        if (instruction) {
-            const conversationManager = await getConversationManager();
-            await conversationManager.injectSystemInstruction(instruction);
-            adjustModal.classList.add('hidden');
-            adjustInput.value = '';
-
-            // Add a visual indicator in chat
-            const note = document.createElement('div');
-            note.className = 'status-indicator';
-            note.style.justifyContent = 'center';
-            note.style.padding = '10px';
-            note.textContent = `Practice focus updated: "${instruction}"`;
-            chatContainer.appendChild(note);
-            scrollToBottom();
-
-            // Trigger a response acknowledging the change
-            const response = await conversationManager.generateResponse(`[System: User changed focus to "${instruction}". Acknowledge this change naturally in Spanish.]`);
-            addMessage(response, 'system');
-            const speechService = await getSpeechService();
-            const currentPrefs = preferences.get();
-            await speechService.speak(response, currentPrefs);
-        }
-    });
 
     // Text Input Handlers
     sendBtn.addEventListener('click', () => {
@@ -391,9 +352,6 @@ export function initUI() {
         if (e.key === 'Escape') {
             if (!settingsModal.classList.contains('hidden')) {
                 settingsModal.classList.add('hidden');
-            }
-            if (!adjustModal.classList.contains('hidden')) {
-                adjustModal.classList.add('hidden');
             }
         }
     });
@@ -607,16 +565,16 @@ export function initUI() {
         if (tutorManager) {
             const currentPreset = preferences.get().tutorInstruction || 'translation';
 
-            if (currentPreset === 'translation') {
-                // Target AI response for translation
-                tutorManager.provideFeedback(responseObj.spanish, 'ai').then(feedback => {
-                    if (feedback) {
-                        addTutorMessage(feedback, 'tutor');
-                    }
-                });
-            } else {
-                // Target User input for feedback
-                tutorManager.provideFeedback(text, 'user').then(feedback => {
+            // 1. Always get translation of the AI's response (Teacher)
+            tutorManager.provideFeedback(responseObj.spanish, 'teacher').then(feedback => {
+                if (feedback) {
+                    addTutorMessage(feedback, 'tutor');
+                }
+            });
+
+            // 2. If a specific feedback mode is selected (not just translation), get feedback on User's input (Student)
+            if (currentPreset !== 'translation') {
+                tutorManager.provideFeedback(text, 'student').then(feedback => {
                     if (feedback) {
                         addTutorMessage(feedback, 'tutor');
                     }

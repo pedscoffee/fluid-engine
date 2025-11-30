@@ -163,7 +163,7 @@ body {
 }
 
 #setup-screen .container {
-    padding: var(--spacing-xl);
+    padding: var(--spacing-xl) var(--spacing-md);
     padding-top: var(--spacing-lg);
     display: flex;
     flex-direction: column;

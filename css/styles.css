@@ -903,8 +903,7 @@ input:checked+.slider:before {
 /* Conversation Layout */
 .conversation-layout {
     display: flex;
-    height: calc(100% - 60px);
-    /* Subtract top bar height approx */
+    flex: 1;
     position: relative;
     overflow: hidden;
 }

@@ -69,18 +69,18 @@
 
                 <div class="setup-form">
                     <!-- Mode Selection -->
+                    <!-- Difficulty Level Selection -->
                     <div class="form-group">
-                        <label>Practice Mode</label>
-                        <div class="segmented-control mode-selector">
-                            <input type="radio" name="mode" value="beginner" id="mode-beginner">
-                            <label for="mode-beginner">Beginner</label>
-
-                            <input type="radio" name="mode" value="intermediate" id="mode-intermediate" checked>
-                            <label for="mode-intermediate">Intermediate</label>
-
-                            <input type="radio" name="mode" value="advanced" id="mode-advanced">
-                            <label for="mode-advanced">Advanced</label>
-                        </div>
+                        <label for="difficulty-level">Proficiency Level</label>
+                        <select id="difficulty-level" class="difficulty-dropdown">
+                            <option value="A1">A1 - Beginner</option>
+                            <option value="A2">A2 - Elementary</option>
+                            <option value="B1" selected>B1 - Intermediate</option>
+                            <option value="B2">B2 - Upper Intermediate</option>
+                            <option value="C1">C1 - Advanced</option>
+                            <option value="C2">C2 - Proficient</option>
+                        </select>
+                        <p class="hint">Select your current level to tailor the AI's complexity.</p>
                     </div>
 
                     <!-- Shared Vocabulary Input (Available in all modes) -->
@@ -106,41 +106,29 @@
                         <p class="hint">The AI will prioritize using these words in the conversation.</p>
                     </div>
 
-                    <!-- Beginner Mode Inputs -->
-                    <div id="beginner-inputs" class="mode-inputs hidden">
-                        <!-- Vocabulary moved to shared section -->
-                    </div>
-
-                    <!-- Intermediate Mode Inputs -->
-                    <div id="intermediate-inputs" class="mode-inputs">
-                        <div class="form-group">
-                            <label>Grammar Focus</label>
-                            <div class="grammar-grid">
-                                <label class="checkbox-item">
-                                    <input type="checkbox" name="grammar" value="present"> Presente
-                                </label>
-                                <label class="checkbox-item">
-                                    <input type="checkbox" name="grammar" value="preterite"> Pretérito
-                                </label>
-                                <label class="checkbox-item">
-                                    <input type="checkbox" name="grammar" value="imperfect"> Imperfecto
-                                </label>
-                                <label class="checkbox-item">
-                                    <input type="checkbox" name="grammar" value="future"> Futuro
-                                </label>
-                                <label class="checkbox-item">
-                                    <input type="checkbox" name="grammar" value="subjunctive"> Subjuntivo
-                                </label>
-                            </div>
+                    <!-- Grammar Focus (Always Visible) -->
+                    <div class="form-group">
+                        <label>Grammar Focus (Optional)</label>
+                        <div class="grammar-grid">
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="grammar" value="present"> Presente
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="grammar" value="preterite"> Pretérito
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="grammar" value="imperfect"> Imperfecto
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="grammar" value="future"> Futuro
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="grammar" value="subjunctive"> Subjuntivo
+                            </label>
                         </div>
                     </div>
 
-                    <!-- Advanced/Shared Inputs -->
-                    <div id="advanced-inputs" class="mode-inputs hidden">
-                        <!-- Advanced uses the standard scenario/custom goal inputs -->
-                    </div>
-
-                    <div class="form-group large-input" id="shared-scenario-inputs">
+                    <div class="form-group large-input">
                         <label for="scenario-select">Quick Scenarios</label>
                         <select id="scenario-select" class="scenario-dropdown">
                             <option value="">Custom (use text box below)</option>

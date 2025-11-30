@@ -10,17 +10,15 @@ export class UserPreferences {
             return JSON.parse(stored);
         }
         return {
-            skillLevel: 'intermediate',
+            difficultyLevel: 'B1',
             grammarFocus: [],
             vocabularyFocus: [],
             customInstructions: '',
             conversationStyle: 'natural',
             muted: false,
             selectedVoice: '',
-            mode: 'intermediate',
             targetVocabulary: '',
             selectedGrammar: [],
-            darkMode: false,
             darkMode: false,
             tutorInstruction: 'translation',
             tutorLanguage: 'english'

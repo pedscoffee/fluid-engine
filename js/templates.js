@@ -38,24 +38,60 @@ export const vocabularyTemplates = {
     hobbies: "Discuss free time activities, sports, arts, and personal interests.",
 };
 
-export const skillLevelTemplates = {
-    beginner: {
-        language: "Use simple, common vocabulary. Speak slowly and clearly. Use primarily present tense. Keep sentences short and clear.",
-        feedback: "Be very encouraging. Celebrate small wins. Provide translations when user seems stuck.",
-        complexity: "Avoid complex grammar structures. Stick to basic sentence patterns.",
-    },
+export const difficultyLevels = {
+    "A1": `**LLM Output Guidelines:**
+- Use only present tense (regular and high-frequency irregulars: ser, estar, tener, ir)
+- Keep sentences simple: subject-verb-object order
+- Use basic vocabulary with clear noun-adjective agreement
+- Employ simple questions with common question words (qué, quién, dónde, cuándo)
+- Stick to concrete, present-time topics
+- Avoid compound sentences; use mainly “y” and “pero” for connecting ideas
+- Use reflexive verbs only for daily routines (levantarse, ducharse)`,
 
-    intermediate: {
-        language: "Use varied vocabulary and mix of tenses. Introduce some idiomatic expressions. Moderate complexity.",
-        feedback: "Balance encouragement with constructive corrections. Introduce more advanced concepts gently.",
-        complexity: "Introduce subjunctive, conditional, and more complex structures.",
-    },
+    "A2": `**LLM Output Guidelines:**
+- Introduce past tense (pretérito and imperfecto) and simple future (ir a + infinitive)
+- Use direct and indirect object pronouns in straightforward contexts
+- Employ comparatives (más/menos que) and basic superlatives
+- Include reflexive verbs more broadly
+- Create slightly longer sentences with porque, cuando, después
+- Discuss familiar topics in present, past, and near future
+- Keep subjunctive minimal or absent`,
 
-    advanced: {
-        language: "Speak naturally at native level. Use idioms, complex structures, varied vocabulary.",
-        feedback: "Focus on nuance, natural phrasing, and advanced usage. Challenge the user.",
-        complexity: "Full grammatical complexity. Discuss abstract topics.",
-    }
+    "B1": `**LLM Output Guidelines:**
+- Mix present, preterite, imperfect, and present perfect naturally
+- Introduce present subjunctive in common contexts (espero que, es importante que)
+- Use commands (imperative) appropriately
+- Combine direct/indirect object pronouns (se lo, se la)
+- Employ relative pronouns (que, quien) and time connectors (aunque, mientras, antes de)
+- Discuss abstract topics with cause-effect relationships
+- Begin conditional sentences (Si estudias, aprobarás)`,
+
+    "B2": `**LLM Output Guidelines:**
+- Use all past tenses (preterite, imperfect, present perfect, pluperfect) with nuance
+- Employ imperfect subjunctive in hypothetical clauses (Si tuviera…, me gustaría que…)
+- Use conditional tenses (simple and perfect) for speculation and politeness
+- Include passive voice (ser + past participle) and impersonal “se”
+- Create complex sentences with subordinate clauses
+- Use advanced connectors (sin embargo, por lo tanto, a pesar de que)
+- Express subtle differences in mood and register`,
+
+    "C1": `**LLM Output Guidelines:**
+- Master all subjunctive forms (present, imperfect, perfect, pluperfect) with precision
+- Shift between indicative and subjunctive to convey stance, certainty, or nuance
+- Use complex temporal relationships and aspectual periphrases
+- Employ sophisticated discourse markers for cohesion
+- Create long, multi-clause sentences with embedded structures
+- Use idiomatic expressions, collocations, and register-appropriate language
+- Handle hypothetical past situations (Si hubiera sabido, habría venido)`,
+
+    "C2": `**LLM Output Guidelines:**
+- Demonstrate complete command of all grammatical structures
+- Use grammar choices for stylistic effect and subtle meaning distinctions
+- Employ nominalizations and reduced clauses for elegant expression
+- Navigate formal/informal registers seamlessly
+- Use advanced passive constructions and “se” variations appropriately
+- Include specialized vocabulary and complex syntax naturally
+- Express ideas with precision, fluidity, and near-native nuance`
 };
 
 export const baseRole = "You are a friendly, patient, and encouraging native Spanish tutor. Your goal is to help the user practice conversational Spanish. You should maintain a natural conversation flow while subtly guiding them to practice specific topics if requested. Never lecture. Always keep the conversation going with relevant follow-up questions.";

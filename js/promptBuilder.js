@@ -1,4 +1,4 @@
-import { grammarTemplates, vocabularyTemplates, skillLevelTemplates, baseRole } from './templates.js';
+import { grammarTemplates, vocabularyTemplates, difficultyLevels, baseRole } from './templates.js';
 
 export class SpanishTutorPromptBuilder {
     constructor(userPreferences) {
@@ -6,88 +6,34 @@ export class SpanishTutorPromptBuilder {
     }
 
     build() {
-        let prompt = "";
+        let prompt = baseRole + "\n\n";
 
-        switch (this.preferences.mode) {
-            case 'beginner':
-                prompt = this.buildBeginnerPrompt();
-                break;
-            case 'intermediate':
-                prompt = this.buildIntermediatePrompt();
-                break;
-            case 'advanced':
-            default:
-                prompt = this.buildAdvancedPrompt();
-                break;
-        }
+        // 1. Difficulty Level (Required)
+        const level = this.preferences.difficultyLevel || 'B1';
+        const levelDescription = difficultyLevels[level] || difficultyLevels['B1'];
 
-        // Custom Instructions (Natural Language) - Moved to end for higher priority
-        if (this.preferences.customInstructions) {
-            prompt += "\nUSER CUSTOM REQUEST (PRIORITY):\n";
-            prompt += `The user specifically asked: "${this.preferences.customInstructions}".\nADAPT YOUR CONVERSATION TO FULFILL THIS REQUEST ABOVE ALL ELSE.\n`;
-        }
+        prompt += `CURRENT DIFFICULTY LEVEL: ${level}\n`;
+        prompt += `${levelDescription}\n\n`;
 
-        // Global Vocabulary (if not already handled by beginner mode)
-        // Beginner mode handles it with specific "English subtitles" rules.
-        // For others, we just want natural usage.
-        if (this.preferences.targetVocabulary && this.preferences.mode !== 'beginner') {
-            prompt += "\nTARGET VOCABULARY:\n";
-            prompt += `Try to naturally include the following words/phrases in your responses: ${this.preferences.targetVocabulary}\n`;
-        }
-
-        return prompt;
-    }
-
-    buildBeginnerPrompt() {
-        let prompt = "ROLE: You are a patient, encouraging Spanish tutor for a complete beginner.\n\n";
-        prompt += "GOAL: Help the user practice specific vocabulary in a very simple, controlled environment.\n\n";
-
-        prompt += "INSTRUCTIONS:\n";
-        prompt += "1. Speak mostly in simple Spanish.\n";
-        prompt += "2. Keep sentences very short and simple (Subject-Verb-Object).\n";
-        prompt += "3. Guide the conversation to use the target vocabulary naturally.\n\n";
-
+        // 2. Target Vocabulary (Optional)
         if (this.preferences.targetVocabulary) {
             prompt += "TARGET VOCABULARY:\n";
-            prompt += `${this.preferences.targetVocabulary}\n\n`;
+            prompt += `Try to naturally include the following words/phrases in your responses: ${this.preferences.targetVocabulary}\n\n`;
         }
 
-        prompt += "EXAMPLE INTERACTION:\n";
-        prompt += "User: Hola\n";
-        prompt += "You: ¡Hola! ¿Cómo estás?\n";
-        prompt += "User: Bien\n";
-        prompt += "You: Me alegro. ¿Te gusta el *gato*?\n";
-
-        return prompt;
-    }
-
-    buildIntermediatePrompt() {
-        let prompt = "ROLE: You are a helpful Spanish tutor focusing on grammar practice.\n\n";
-        prompt += "GOAL: Help the user practice specific grammar tenses/moods.\n\n";
-
-        prompt += "INSTRUCTIONS:\n";
-        prompt += "1. Speak naturally but focus your questions to elicit the target grammar.\n";
-        prompt += "2. If the user makes a grammar mistake in the target tense, gently correct them.\n";
-        prompt += "3. Avoid complex grammar that is not in the focus list if possible.\n\n";
-
+        // 3. Grammar Focus (Optional)
         if (this.preferences.selectedGrammar && this.preferences.selectedGrammar.length > 0) {
-            prompt += "GRAMMAR FOCUS (Prioritize these):\n";
+            prompt += "GRAMMAR FOCUS:\n";
+            prompt += "Prioritize using or eliciting the following grammar concepts:\n";
             this.preferences.selectedGrammar.forEach(g => prompt += `- ${g}\n`);
             prompt += "\n";
         }
 
-        return prompt;
-    }
-
-    buildAdvancedPrompt() {
-        let prompt = baseRole + "\n\n";
-
-        // Skill Level
-        const skill = skillLevelTemplates[this.preferences.skillLevel] || skillLevelTemplates.advanced;
-        prompt += `SKILL LEVEL: Advanced/Natural\n`;
-        prompt += `- Language: ${skill.language}\n`;
-        prompt += `- Feedback: ${skill.feedback}\n`;
-        prompt += `- Complexity: ${skill.complexity}\n\n`;
+        // 4. Custom Instructions / Scenarios (Optional - High Priority)
+        if (this.preferences.customInstructions) {
+            prompt += "USER CUSTOM REQUEST (PRIORITY):\n";
+            prompt += `The user specifically asked: "${this.preferences.customInstructions}".\nADAPT YOUR CONVERSATION TO FULFILL THIS REQUEST ABOVE ALL ELSE.\n`;
+        }
 
         // General Rules
         prompt += "IMPORTANT RULES:\n";

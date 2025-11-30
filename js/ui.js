@@ -26,12 +26,8 @@ export function initUI() {
     const scenarioSelect = document.getElementById('scenario-select');
 
     // Mode Inputs
-    const modeRadios = document.querySelectorAll('input[name="mode"]');
-    const beginnerInputs = document.getElementById('beginner-inputs');
-    const intermediateInputs = document.getElementById('intermediate-inputs');
-    const advancedInputs = document.getElementById('advanced-inputs');
+    const difficultySelect = document.getElementById('difficulty-level');
     const vocabListInput = document.getElementById('vocab-list');
-    const sharedScenarioInputs = document.getElementById('shared-scenario-inputs');
 
     const chatInput = document.getElementById('chat-input');
     const sendBtn = document.getElementById('send-btn');
@@ -59,12 +55,8 @@ export function initUI() {
     const darkModeToggle = document.getElementById('dark-mode-toggle');
 
     // Initialize inputs with saved prefs
-    if (prefs.mode) {
-        const el = document.querySelector(`input[name="mode"][value="${prefs.mode}"]`);
-        if (el) {
-            el.checked = true;
-            updateModeVisibility(prefs.mode);
-        }
+    if (prefs.difficultyLevel) {
+        difficultySelect.value = prefs.difficultyLevel;
     }
     if (prefs.targetVocabulary) {
         vocabListInput.value = prefs.targetVocabulary;
@@ -124,36 +116,7 @@ export function initUI() {
     // Check for saved session on load
     checkForSavedSession();
 
-    // Mode switching handler
-    modeRadios.forEach(radio => {
-        radio.addEventListener('change', (e) => {
-            updateModeVisibility(e.target.value);
-        });
-    });
 
-    function updateModeVisibility(mode) {
-        // Hide all first
-        beginnerInputs.classList.add('hidden');
-        intermediateInputs.classList.add('hidden');
-        advancedInputs.classList.add('hidden');
-        sharedScenarioInputs.classList.add('hidden');
-
-        // Vocabulary is now shared, so we don't hide it based on mode
-        // But we might want to show/hide specific hints if needed. 
-        // For now, it stays visible.
-
-        // Show selected
-        // Show selected
-        if (mode === 'beginner') {
-            beginnerInputs.classList.remove('hidden');
-        } else if (mode === 'intermediate') {
-            intermediateInputs.classList.remove('hidden');
-            sharedScenarioInputs.classList.remove('hidden');
-        } else if (mode === 'advanced') {
-            advancedInputs.classList.remove('hidden');
-            sharedScenarioInputs.classList.remove('hidden');
-        }
-    }
 
     // Scenario selection handler
     scenarioSelect.addEventListener('change', () => {
@@ -168,11 +131,11 @@ export function initUI() {
     // Event Listeners
     startBtn.addEventListener('click', async () => {
         // 1. Gather preferences
-        const selectedMode = document.querySelector('input[name="mode"]:checked').value;
+        const selectedDifficulty = difficultySelect.value;
         const selectedGrammar = Array.from(document.querySelectorAll('input[name="grammar"]:checked')).map(cb => cb.value);
 
         const newPrefs = {
-            mode: selectedMode,
+            difficultyLevel: selectedDifficulty,
             targetVocabulary: vocabListInput.value.trim(),
             selectedGrammar: selectedGrammar,
             customInstructions: practiceGoalInput.value.trim(),

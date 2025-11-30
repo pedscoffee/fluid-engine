@@ -844,8 +844,7 @@ input:checked+.slider:before {
 .tutor-message strong {
     font-weight: 600;
     color: var(--primary);
-}
-}
+    color: var(--primary);
 }
 
 /* Conversation Layout */

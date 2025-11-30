@@ -62,7 +62,8 @@ body {
 
 #app {
     width: 100%;
-    max-width: 80%;
+    max-width: 100%;
+    /* Full width */
     height: 100%;
     position: relative;
     display: flex;
@@ -170,7 +171,8 @@ body {
     /* Allow growing */
     justify-content: flex-start;
     gap: var(--spacing-xl);
-    max-width: 1200px;
+    max-width: 100%;
+    /* Match hero banner */
     margin: 0 auto;
 }
 

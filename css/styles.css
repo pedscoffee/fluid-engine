@@ -202,17 +202,26 @@ body {
     font-family: 'Outfit', sans-serif;
     font-style: italic;
     color: var(--primary-light);
-    font-size: 1.1rem;
+    font-size: 1.25rem;
+    /* Increased size */
     margin-bottom: var(--spacing-sm);
     font-weight: 300;
     opacity: 0.9;
+    width: 100%;
+    /* Use full width */
 }
 
 .hero-banner .subtitle {
     color: white;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
+    /* Increased size */
     opacity: 0.95;
     font-weight: 400;
+    width: 100%;
+    /* Use full width */
+    max-width: 600px;
+    /* Limit width for readability but wider than before */
+    line-height: 1.4;
 }
 
 .setup-form {
@@ -307,6 +316,19 @@ textarea:focus {
     height: 8px;
     background-color: var(--accent);
     border-radius: 50%;
+}
+
+.header-logo-icon {
+    height: 24px;
+    width: auto;
+    margin-right: var(--spacing-sm);
+    filter: brightness(0);
+    /* Make black for light mode header */
+}
+
+[data-theme="dark"] .header-logo-icon {
+    filter: brightness(0) invert(1);
+    /* Make white for dark mode */
 }
 
 .chat-container {

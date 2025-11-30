@@ -26,7 +26,7 @@ export function initUI() {
     const scenarioSelect = document.getElementById('scenario-select');
 
     // Mode Inputs
-    const difficultySelect = document.getElementById('difficulty-level');
+    // difficultySelect removed, using querySelector for radios
     const vocabListInput = document.getElementById('vocab-list');
 
     const chatInput = document.getElementById('chat-input');
@@ -56,7 +56,8 @@ export function initUI() {
 
     // Initialize inputs with saved prefs
     if (prefs.difficultyLevel) {
-        difficultySelect.value = prefs.difficultyLevel;
+        const el = document.querySelector(`input[name="difficulty"][value="${prefs.difficultyLevel}"]`);
+        if (el) el.checked = true;
     }
     if (prefs.targetVocabulary) {
         vocabListInput.value = prefs.targetVocabulary;
@@ -131,7 +132,7 @@ export function initUI() {
     // Event Listeners
     startBtn.addEventListener('click', async () => {
         // 1. Gather preferences
-        const selectedDifficulty = difficultySelect.value;
+        const selectedDifficulty = document.querySelector('input[name="difficulty"]:checked').value;
         const selectedGrammar = Array.from(document.querySelectorAll('input[name="grammar"]:checked')).map(cb => cb.value);
 
         const newPrefs = {

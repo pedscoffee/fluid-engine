@@ -74,15 +74,27 @@
                     <!-- Mode Selection -->
                     <!-- Difficulty Level Selection -->
                     <div class="form-group">
-                        <label for="difficulty-level">Proficiency Level</label>
-                        <select id="difficulty-level" class="difficulty-dropdown">
-                            <option value="A1">A1 - Beginner</option>
-                            <option value="A2">A2 - Elementary</option>
-                            <option value="B1" selected>B1 - Intermediate</option>
-                            <option value="B2">B2 - Upper Intermediate</option>
-                            <option value="C1">C1 - Advanced</option>
-                            <option value="C2">C2 - Proficient</option>
-                        </select>
+                        <label>Proficiency Level</label>
+                        <div class="grammar-grid">
+                            <label class="checkbox-item">
+                                <input type="radio" name="difficulty" value="A1"> A1 - Beginner
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="radio" name="difficulty" value="A2"> A2 - Elementary
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="radio" name="difficulty" value="B1" checked> B1 - Intermediate
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="radio" name="difficulty" value="B2"> B2 - Upper Int.
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="radio" name="difficulty" value="C1"> C1 - Advanced
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="radio" name="difficulty" value="C2"> C2 - Proficient
+                            </label>
+                        </div>
                         <p class="hint">Select your current level to tailor the AI's complexity.</p>
                     </div>
 
@@ -168,6 +180,7 @@
                     </svg>
                 </button>
                 <div class="status-indicator">
+                    <img src="images/logo.png" alt="Soltura" class="header-logo-icon">
                     <span class="status-dot"></span>
                     <span id="connection-status">Ready</span>
                 </div>

@@ -436,6 +436,18 @@ export function initUI() {
         preferences.update({ tutorInstruction: preset });
     });
 
+    // Tutor Language Toggle - Immediate Update
+    const langRadios = document.querySelectorAll('input[name="tutor-lang"]');
+    langRadios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                preferences.update({ tutorLanguage: e.target.value });
+                // Optional: visual feedback
+                addTutorMessage(`Feedback language set to: ${e.target.value}`, 'system');
+            }
+        });
+    });
+
     // Tutor Apply Button
     tutorApplyBtn.addEventListener('click', async () => {
         const tutorManager = getTutorManager();

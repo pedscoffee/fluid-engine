@@ -1,6 +1,6 @@
 export class UserPreferences {
     constructor() {
-        this.storageKey = 'fluidez_preferences';
+        this.storageKey = 'soltura_preferences';
         this.preferences = this.load();
     }
 

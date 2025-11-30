@@ -8,7 +8,7 @@ export class ConversationManager {
         this.messages = [];
         this.systemPrompt = "";
         this.isInitialized = false;
-        this.storageKey = 'fluidez_conversation';
+        this.storageKey = 'soltura_conversation';
     }
 
     async init(progressCallback) {

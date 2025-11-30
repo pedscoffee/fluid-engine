@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fluidez-v1';
+const CACHE_NAME = 'soltura-v1';
 const APP_SHELL = [
     '/index.html',
     '/css/styles.css',

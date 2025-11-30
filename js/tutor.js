@@ -57,10 +57,7 @@ export class TutorManager {
 The student wrote: "${studentText}"
 
 ${langDirective}
-Carefully check the student's message for grammatical errors or unnatural phrasing.
-If there are errors, explain them clearly.
-If the message is correct, simply confirm it is correct without inventing improvements.
-Provide helpful feedback based on your instructions. Be concise.`;
+Identify something the student did well and highlight it briefly.  Then identify something that could be improved, or if there are no errors provide positive feedback and suggest an alternate way the statement could have been phrased.  Provide helpful feedback based on your instructions. Be concise.`;
 
             const feedback = await this._generateTutorResponse(systemPrompt, studentText);
 

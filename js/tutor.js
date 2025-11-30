@@ -121,7 +121,7 @@ Provide a clear, helpful answer. Reference the conversation context when relevan
         const completion = await engine.chat.completions.create({
             messages: messages,
             temperature: 0.7,
-            max_tokens: 200,
+            max_tokens: 512,
         });
 
         return completion.choices[0].message.content.trim();

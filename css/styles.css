@@ -172,14 +172,19 @@ body {
     gap: var(--spacing-xl);
 }
 
-.hero h1 {
-    font-size: 3rem;
-    font-weight: 700;
-    margin-bottom: var(--spacing-sm);
-    background: linear-gradient(to right, var(--primary), var(--accent));
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+.logo {
+    max-width: 200px;
+    height: auto;
+    margin-bottom: var(--spacing-xs);
+}
+
+.phonetic {
+    font-family: 'Outfit', sans-serif;
+    font-style: italic;
+    color: var(--text-muted);
+    font-size: 1rem;
+    margin-bottom: var(--spacing-md);
+    font-weight: 300;
 }
 
 .hero .subtitle {

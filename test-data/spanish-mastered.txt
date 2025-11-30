@@ -1,0 +1,31 @@
+hola	hello
+adiós	goodbye
+gracias	thank you
+por favor	please
+sí	yes
+no	no
+buenos días	good morning
+buenas noches	good night
+casa	house
+comer	to eat
+beber	to drink
+agua	water
+libro	book
+gato	cat
+perro	dog
+grande	big
+pequeño	small
+rojo	red
+azul	blue
+verde	green
+madre	mother
+padre	father
+hermano	brother
+hermana	sister
+amigo	friend
+ciudad	city
+calle	street
+coche	car
+tiempo	time/weather
+día	day
+noche	night

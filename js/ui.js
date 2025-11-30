@@ -4,6 +4,7 @@ import { getConversationManager } from './conversation.js';
 import { getSpeechService } from './speech.js';
 import { scenarios } from './scenarios.js';
 import { initTutor, getTutorManager } from './tutor.js';
+import { ankiDataManager } from './ankiData.js';
 
 export function initUI() {
     const preferences = new UserPreferences();
@@ -40,6 +41,18 @@ export function initUI() {
     // Tutor Panel Elements
     const csvUpload = document.getElementById('csv-upload');
     const importCsvBtn = document.getElementById('import-csv-btn');
+
+    // Anki Import Elements
+    const ankiApkgUpload = document.getElementById('anki-apkg-upload');
+    const ankiTsvUpload = document.getElementById('anki-tsv-upload');
+    const importApkgBtn = document.getElementById('import-apkg-btn');
+    const importTsvBtn = document.getElementById('import-tsv-btn');
+    const ankiStats = document.getElementById('anki-stats');
+    const clearAnkiBtn = document.getElementById('clear-anki-btn');
+    const tsvImportModal = document.getElementById('tsv-import-modal');
+    const confirmTsvBtn = document.getElementById('confirm-tsv-btn');
+    const cancelTsvBtn = document.getElementById('cancel-tsv-btn');
+
     const tutorPanel = document.getElementById('tutor-panel');
     const tutorChat = document.getElementById('tutor-chat');
     const toggleTutorBtn = document.getElementById('toggle-tutor-btn');
@@ -360,6 +373,115 @@ export function initUI() {
         reader.readAsText(file);
         // Reset input so same file can be selected again
         csvUpload.value = '';
+    });
+
+    // Anki Import Logic
+    function updateAnkiStats() {
+        const stats = ankiDataManager.getStatistics();
+
+        if (stats.totalVocabulary > 0) {
+            ankiStats.classList.remove('hidden');
+            document.getElementById('anki-deck-count').textContent = stats.decks;
+            document.getElementById('anki-vocab-count').textContent = stats.totalVocabulary;
+            document.getElementById('anki-mastered-count').textContent = stats.mastered;
+            document.getElementById('anki-familiar-count').textContent = stats.familiar;
+            document.getElementById('anki-learning-count').textContent = stats.learning;
+            document.getElementById('anki-new-count').textContent = stats.new;
+        } else {
+            ankiStats.classList.add('hidden');
+        }
+    }
+
+    // Initialize Anki stats on load
+    updateAnkiStats();
+
+    // APKG Import
+    importApkgBtn.addEventListener('click', () => {
+        ankiApkgUpload.click();
+    });
+
+    ankiApkgUpload.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        loadingOverlay.classList.remove('hidden');
+        loadingText.textContent = 'Importing Anki Deck...';
+        loadingDetail.textContent = 'Parsing APKG file and extracting vocabulary';
+
+        try {
+            const result = await ankiDataManager.importAPKG(file);
+
+            if (result.success) {
+                updateAnkiStats();
+                alert(`Success! Imported ${result.cardCount} cards with ${result.vocabularyCount} unique vocabulary items from "${result.deckName}".`);
+            } else {
+                alert(`Import failed: ${result.error}`);
+            }
+        } catch (error) {
+            console.error('Error importing APKG:', error);
+            alert(`Import failed: ${error.message}`);
+        } finally {
+            loadingOverlay.classList.add('hidden');
+            ankiApkgUpload.value = ''; // Reset for next import
+        }
+    });
+
+    // TSV Import - Show modal first
+    let pendingTsvFile = null;
+
+    importTsvBtn.addEventListener('click', () => {
+        ankiTsvUpload.click();
+    });
+
+    ankiTsvUpload.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        pendingTsvFile = file;
+        tsvImportModal.classList.remove('hidden');
+        ankiTsvUpload.value = ''; // Reset
+    });
+
+    confirmTsvBtn.addEventListener('click', async () => {
+        if (!pendingTsvFile) return;
+
+        const masteryLevel = document.querySelector('input[name="tsv-mastery"]:checked')?.value || 'familiar';
+        tsvImportModal.classList.add('hidden');
+
+        loadingOverlay.classList.remove('hidden');
+        loadingText.textContent = 'Importing Text File...';
+        loadingDetail.textContent = 'Processing vocabulary';
+
+        try {
+            const result = await ankiDataManager.importTSV(pendingTsvFile, masteryLevel);
+
+            if (result.success) {
+                updateAnkiStats();
+                alert(`Success! Imported ${result.cardCount} cards with ${result.vocabularyCount} unique vocabulary items from "${result.deckName}" as "${masteryLevel}" level.`);
+            } else {
+                alert(`Import failed: ${result.error}`);
+            }
+        } catch (error) {
+            console.error('Error importing TSV:', error);
+            alert(`Import failed: ${error.message}`);
+        } finally {
+            loadingOverlay.classList.add('hidden');
+            pendingTsvFile = null;
+        }
+    });
+
+    cancelTsvBtn.addEventListener('click', () => {
+        tsvImportModal.classList.add('hidden');
+        pendingTsvFile = null;
+    });
+
+    // Clear Anki Data
+    clearAnkiBtn.addEventListener('click', () => {
+        if (confirm('Are you sure you want to clear all imported Anki data? This cannot be undone.')) {
+            ankiDataManager.clearAllData();
+            updateAnkiStats();
+            alert('Anki data cleared successfully.');
+        }
     });
 
     // Tutor Panel Logic

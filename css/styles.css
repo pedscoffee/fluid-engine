@@ -1158,3 +1158,207 @@ input:checked+.slider:before {
         /* Keep width for animation */
     }
 }
+
+/* ========================================
+   ANKI INTEGRATION STYLES
+   ======================================== */
+
+/* Anki Section Container */
+.anki-section {
+    border: 2px solid var(--primary-light);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    background: linear-gradient(135deg, var(--primary-light) 0%, var(--surface) 100%);
+}
+
+.anki-import-area {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.anki-info {
+    margin-bottom: var(--spacing-sm);
+}
+
+.anki-import-buttons {
+    display: flex;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+}
+
+/* Anki Statistics Display */
+.anki-stats {
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    margin-top: var(--spacing-md);
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid var(--surface-light);
+}
+
+.stat-row:last-of-type {
+    border-bottom: none;
+    margin-bottom: var(--spacing-md);
+}
+
+.stat-label {
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-md);
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    background: var(--surface-light);
+}
+
+.stat-item.mastered {
+    border: 2px solid #4CAF50;
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, var(--surface-light) 100%);
+}
+
+.stat-item.familiar {
+    border: 2px solid #2196F3;
+    background: linear-gradient(135deg, rgba(33, 150, 243, 0.1) 0%, var(--surface-light) 100%);
+}
+
+.stat-item.learning {
+    border: 2px solid #FF9800;
+    background: linear-gradient(135deg, rgba(255, 152, 0, 0.1) 0%, var(--surface-light) 100%);
+}
+
+.stat-item.new {
+    border: 2px solid #F44336;
+    background: linear-gradient(135deg, rgba(244, 67, 54, 0.1) 0%, var(--surface-light) 100%);
+}
+
+.stat-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.stat-text {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-top: var(--spacing-xs);
+}
+
+/* TSV Import Modal Styles */
+.modal-description {
+    color: var(--text-muted);
+    margin-bottom: var(--spacing-lg);
+    font-size: 0.9rem;
+}
+
+.mastery-selection {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+}
+
+.mastery-option {
+    cursor: pointer;
+}
+
+.mastery-option input[type="radio"] {
+    display: none;
+}
+
+.mastery-card {
+    border: 2px solid var(--surface-light);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    transition: all 0.2s ease;
+    background: var(--surface);
+}
+
+.mastery-card:hover {
+    border-color: var(--primary);
+    transform: translateX(4px);
+}
+
+.mastery-option input[type="radio"]:checked + .mastery-card {
+    border-width: 3px;
+    background: var(--primary-light);
+}
+
+.mastery-option input[type="radio"]:checked + .mastery-card.mastered {
+    border-color: #4CAF50;
+}
+
+.mastery-option input[type="radio"]:checked + .mastery-card.familiar {
+    border-color: #2196F3;
+}
+
+.mastery-option input[type="radio"]:checked + .mastery-card.learning {
+    border-color: #FF9800;
+}
+
+.mastery-option input[type="radio"]:checked + .mastery-card.new {
+    border-color: #F44336;
+}
+
+.mastery-title {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: var(--spacing-xs);
+    color: var(--text);
+}
+
+.mastery-desc {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* Button text style for clear button */
+.btn-text {
+    background: none;
+    border: none;
+    color: var(--error);
+    font-weight: 500;
+    cursor: pointer;
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-md);
+    transition: background-color 0.2s;
+    margin-top: var(--spacing-md);
+    width: 100%;
+}
+
+.btn-text:hover {
+    background-color: rgba(184, 92, 74, 0.1);
+}
+
+/* Responsive adjustments for Anki section */
+@media (max-width: 768px) {
+    .stat-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .anki-import-buttons {
+        flex-direction: column;
+    }
+
+    .anki-import-buttons button {
+        width: 100%;
+    }
+}

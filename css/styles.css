@@ -260,7 +260,7 @@ textarea:focus {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: rgba(250, 247, 242, 0.95);
+    background-color: var(--background);
     backdrop-filter: blur(10px);
     z-index: 10;
     border-bottom: 1px solid var(--surface-light);
@@ -464,12 +464,16 @@ textarea:focus {
 
 #send-btn {
     background-color: var(--primary);
+    color: white;
     padding: var(--spacing-md);
     min-width: 40px;
     min-height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
 }
 
 #send-btn:hover {

@@ -4,7 +4,7 @@ export class TutorManager {
     constructor(conversationManager) {
         this.conversationManager = conversationManager;
         this.tutorMessages = [];
-        this.currentInstruction = "Translate the Spanish message to English. Be clear and concise.";
+        this.currentInstruction = "Translate the student's message to English. Output ONLY the translation.";
         this.isInitialized = false;
     }
 
@@ -20,7 +20,7 @@ export class TutorManager {
         console.log("Tutor instruction set to:", instruction);
     }
 
-    async provideFeedback(spanishMessage) {
+    async provideFeedback(message, targetType = 'user') {
         // Called after each main conversation message
         // Generates tutor response based on current instruction
         if (!this.isInitialized || !this.conversationManager.engine) {
@@ -29,18 +29,35 @@ export class TutorManager {
         }
 
         try {
-            const systemPrompt = `You are a helpful Spanish language tutor. ${this.currentInstruction}
+            let systemPrompt;
 
-The student just received this Spanish message: "${spanishMessage}"
+            // Check if strict translation is requested to avoid chatty preamble
+            if (this.currentInstruction.includes("Output ONLY the translation")) {
+                const contextIntro = targetType === 'ai'
+                    ? "The student received this message:"
+                    : "The student wrote this message:";
+
+                systemPrompt = `You are a precise translator. ${this.currentInstruction}
+                
+${contextIntro} "${message}"`;
+            } else {
+                const contextIntro = targetType === 'ai'
+                    ? "The student just received this Spanish message:"
+                    : "The student wrote this message:";
+
+                systemPrompt = `You are a helpful Spanish language tutor. ${this.currentInstruction}
+
+${contextIntro} "${message}"
 
 Provide helpful feedback based on your instructions. Be concise and encouraging.`;
+            }
 
-            const tutorResponse = await this._generateTutorResponse(systemPrompt, spanishMessage);
+            const tutorResponse = await this._generateTutorResponse(systemPrompt, message);
 
             this.tutorMessages.push({
                 role: 'tutor',
                 content: tutorResponse,
-                context: spanishMessage,
+                context: message,
                 timestamp: Date.now()
             });
 
@@ -122,7 +139,7 @@ Provide a clear, helpful answer. Reference the conversation context when relevan
 
     reset() {
         this.tutorMessages = [];
-        this.currentInstruction = "Translate the Spanish message to English. Be clear and concise.";
+        this.currentInstruction = "Translate the student's message to English. Output ONLY the translation.";
     }
 }
 

@@ -241,15 +241,10 @@ export function initUI() {
             // Speak greeting (async, don't await blocking UI)
             speechService.speak(greetingObj.spanish, newPrefs);
 
-            // Get tutor feedback on greeting
-            const tutorManager = getTutorManager();
-            if (tutorManager) {
-                tutorManager.provideFeedback(greetingObj.spanish).then(feedback => {
-                    if (feedback) {
-                        addTutorMessage(feedback, 'tutor');
-                    }
-                });
-            }
+            // Speak greeting (async, don't await blocking UI)
+            speechService.speak(greetingObj.spanish, newPrefs);
+
+            // No tutor feedback on initial greeting (it's from AI)
 
         } catch (error) {
             console.error(error);
@@ -487,19 +482,19 @@ export function initUI() {
 
         switch (preset) {
             case 'translation':
-                instruction = 'Translate the Spanish message to English. Be clear and concise.';
+                instruction = 'Translate the Spanish message to English. Output ONLY the translation.';
                 break;
             case 'grammar':
-                instruction = 'Translate the Spanish message to English and explain any grammar patterns used.';
+                instruction = 'Analyze the student\'s Spanish message. Translate it to English and explain any grammar patterns used.';
                 break;
             case 'verbs':
-                instruction = 'Point out any irregular verbs in the Spanish message and explain their conjugations. Also provide the English translation.';
+                instruction = 'Analyze the student\'s Spanish message. Point out any irregular verbs in the message and explain their conjugations. Also provide the English translation.';
                 break;
             case 'vocabulary':
-                instruction = 'Translate the Spanish message to English and suggest related vocabulary words that would be helpful.';
+                instruction = 'Analyze the student\'s Spanish message. Translate it to English and suggest related vocabulary words that would be helpful.';
                 break;
             case 'mistakes':
-                instruction = 'Identify any common learner mistakes in the Spanish message, explain the correct usage, and provide the English translation.';
+                instruction = 'Analyze the student\'s Spanish message. Identify any common learner mistakes, explain the correct usage, and provide the English translation.';
                 break;
             case 'custom':
                 instruction = tutorCustomInstruction.value.trim();
@@ -610,11 +605,23 @@ export function initUI() {
         // Pass 2: Get tutor feedback asynchronously
         const tutorManager = getTutorManager();
         if (tutorManager) {
-            tutorManager.provideFeedback(responseObj.spanish).then(feedback => {
-                if (feedback) {
-                    addTutorMessage(feedback, 'tutor');
-                }
-            });
+            const currentPreset = preferences.get().tutorInstruction || 'translation';
+
+            if (currentPreset === 'translation') {
+                // Target AI response for translation
+                tutorManager.provideFeedback(responseObj.spanish, 'ai').then(feedback => {
+                    if (feedback) {
+                        addTutorMessage(feedback, 'tutor');
+                    }
+                });
+            } else {
+                // Target User input for feedback
+                tutorManager.provideFeedback(text, 'user').then(feedback => {
+                    if (feedback) {
+                        addTutorMessage(feedback, 'tutor');
+                    }
+                });
+            }
         }
     }
 

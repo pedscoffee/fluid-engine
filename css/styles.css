@@ -193,11 +193,9 @@ body {
 }
 
 .logo {
-    max-width: 280px;
+    max-width: 400px;
     height: auto;
     margin-bottom: var(--spacing-sm);
-    filter: brightness(0) invert(1);
-    /* Make logo white */
 }
 
 .phonetic {

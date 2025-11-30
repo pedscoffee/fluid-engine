@@ -42,6 +42,9 @@
     }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Libraries for Anki APKG parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
 </head>
 
 <body>
@@ -119,6 +122,68 @@
                             </div>
                         </div>
                         <p class="hint">The AI will prioritize using these words in the conversation.</p>
+                    </div>
+
+                    <!-- Anki Integration Section -->
+                    <div class="form-group anki-section">
+                        <label>Anki Spaced Repetition Integration</label>
+                        <div class="anki-import-area">
+                            <div class="anki-info">
+                                <p class="hint">Import your Anki decks to personalize conversations based on your vocabulary mastery. The AI will use words you know well to scaffold learning of newer vocabulary.</p>
+                            </div>
+                            <div class="anki-import-buttons">
+                                <input type="file" id="anki-apkg-upload" accept=".apkg" class="hidden">
+                                <input type="file" id="anki-tsv-upload" accept=".txt,.tsv,.csv" class="hidden">
+                                <button id="import-apkg-btn" class="btn-secondary btn-small" type="button">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                        <polyline points="7 10 12 15 17 10" />
+                                        <line x1="12" y1="15" x2="12" y2="3" />
+                                    </svg>
+                                    Import APKG
+                                </button>
+                                <button id="import-tsv-btn" class="btn-secondary btn-small" type="button">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                        <polyline points="14 2 14 8 20 8" />
+                                    </svg>
+                                    Import TSV/Text
+                                </button>
+                            </div>
+                            <div id="anki-stats" class="anki-stats hidden">
+                                <div class="stat-row">
+                                    <span class="stat-label">Imported Decks:</span>
+                                    <span id="anki-deck-count">0</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span class="stat-label">Total Vocabulary:</span>
+                                    <span id="anki-vocab-count">0</span>
+                                </div>
+                                <div class="stat-grid">
+                                    <div class="stat-item mastered">
+                                        <span class="stat-number" id="anki-mastered-count">0</span>
+                                        <span class="stat-text">Mastered</span>
+                                    </div>
+                                    <div class="stat-item familiar">
+                                        <span class="stat-number" id="anki-familiar-count">0</span>
+                                        <span class="stat-text">Familiar</span>
+                                    </div>
+                                    <div class="stat-item learning">
+                                        <span class="stat-number" id="anki-learning-count">0</span>
+                                        <span class="stat-text">Learning</span>
+                                    </div>
+                                    <div class="stat-item new">
+                                        <span class="stat-number" id="anki-new-count">0</span>
+                                        <span class="stat-text">New</span>
+                                    </div>
+                                </div>
+                                <button id="clear-anki-btn" class="btn-text btn-small">Clear Anki Data</button>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Grammar Focus (Always Visible) -->
@@ -347,6 +412,50 @@
                 </div>
                 <div class="modal-actions">
                     <button id="close-settings-btn" class="btn-primary">Done</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TSV Import Modal -->
+        <div id="tsv-import-modal" class="modal hidden">
+            <div class="modal-content">
+                <h3>Import TSV/Text File</h3>
+                <p class="modal-description">Since text files don't contain scheduling data, please select the mastery level for these cards:</p>
+
+                <div class="mastery-selection">
+                    <label class="mastery-option">
+                        <input type="radio" name="tsv-mastery" value="mastered">
+                        <div class="mastery-card mastered">
+                            <div class="mastery-title">Mastered</div>
+                            <div class="mastery-desc">Words you know very well (6+ months interval)</div>
+                        </div>
+                    </label>
+                    <label class="mastery-option">
+                        <input type="radio" name="tsv-mastery" value="familiar" checked>
+                        <div class="mastery-card familiar">
+                            <div class="mastery-title">Familiar</div>
+                            <div class="mastery-desc">Words you're comfortable with (3-6 weeks interval)</div>
+                        </div>
+                    </label>
+                    <label class="mastery-option">
+                        <input type="radio" name="tsv-mastery" value="learning">
+                        <div class="mastery-card learning">
+                            <div class="mastery-title">Learning</div>
+                            <div class="mastery-desc">Words you're currently learning (1-3 weeks interval)</div>
+                        </div>
+                    </label>
+                    <label class="mastery-option">
+                        <input type="radio" name="tsv-mastery" value="new">
+                        <div class="mastery-card new">
+                            <div class="mastery-title">New</div>
+                            <div class="mastery-desc">New or challenging words (< 1 week interval)</div>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="modal-actions">
+                    <button id="cancel-tsv-btn" class="btn-secondary">Cancel</button>
+                    <button id="confirm-tsv-btn" class="btn-primary">Import</button>
                 </div>
             </div>
         </div>

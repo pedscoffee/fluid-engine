@@ -1,4 +1,5 @@
 import { grammarTemplates, vocabularyTemplates, difficultyLevels, baseRole } from './templates.js';
+import { ankiDataManager } from './ankiData.js';
 
 export class SpanishTutorPromptBuilder {
     constructor(userPreferences) {
@@ -15,13 +16,71 @@ export class SpanishTutorPromptBuilder {
         prompt += `CURRENT DIFFICULTY LEVEL: ${level}\n`;
         prompt += `${levelDescription}\n\n`;
 
-        // 2. Target Vocabulary (Optional)
+        // 2. Anki Spaced Repetition Vocabulary Guidance (If available)
+        const ankiGuidance = ankiDataManager.getVocabularyGuidance();
+        if (ankiGuidance.totalWords > 0) {
+            prompt += "ANKI VOCABULARY SCAFFOLDING:\n";
+            prompt += "The user has imported their Anki deck data. Use this to create an optimal learning experience:\n\n";
+
+            // Mastered words (use freely as scaffolding)
+            if (ankiGuidance.mastered.length > 0) {
+                const masteredSample = this.sampleWords(ankiGuidance.mastered, 30);
+                prompt += `MASTERED WORDS (use freely - these are well-known to the user):\n`;
+                prompt += `${masteredSample.join(', ')}\n`;
+                if (ankiGuidance.mastered.length > 30) {
+                    prompt += `...and ${ankiGuidance.mastered.length - 30} more mastered words\n`;
+                }
+                prompt += "\n";
+            }
+
+            // Familiar words (good for scaffolding)
+            if (ankiGuidance.familiar.length > 0) {
+                const familiarSample = this.sampleWords(ankiGuidance.familiar, 30);
+                prompt += `FAMILIAR WORDS (comfortable for the user - use to support learning):\n`;
+                prompt += `${familiarSample.join(', ')}\n`;
+                if (ankiGuidance.familiar.length > 30) {
+                    prompt += `...and ${ankiGuidance.familiar.length - 30} more familiar words\n`;
+                }
+                prompt += "\n";
+            }
+
+            // Learning words (current focus - use with support)
+            if (ankiGuidance.learning.length > 0) {
+                const learningSample = this.sampleWords(ankiGuidance.learning, 20);
+                prompt += `CURRENTLY LEARNING (use these more frequently to reinforce):\n`;
+                prompt += `${learningSample.join(', ')}\n`;
+                if (ankiGuidance.learning.length > 20) {
+                    prompt += `...and ${ankiGuidance.learning.length - 20} more learning words\n`;
+                }
+                prompt += "\n";
+            }
+
+            // New/struggling words (introduce carefully with context)
+            if (ankiGuidance.new.length > 0) {
+                const newSample = this.sampleWords(ankiGuidance.new, 15);
+                prompt += `NEW/CHALLENGING WORDS (introduce carefully with familiar word support):\n`;
+                prompt += `${newSample.join(', ')}\n`;
+                if (ankiGuidance.new.length > 15) {
+                    prompt += `...and ${ankiGuidance.new.length - 15} more new words\n`;
+                }
+                prompt += "\n";
+            }
+
+            prompt += "SCAFFOLDING STRATEGY:\n";
+            prompt += "- Build sentences using MASTERED and FAMILIAR words as the foundation\n";
+            prompt += "- Naturally incorporate LEARNING words to reinforce retention\n";
+            prompt += "- Introduce NEW words in context with lots of familiar vocabulary support\n";
+            prompt += "- Create connections between new words and words the user already knows well\n";
+            prompt += "- This approach maximizes comprehension while gently expanding vocabulary\n\n";
+        }
+
+        // 3. Target Vocabulary (Optional)
         if (this.preferences.targetVocabulary) {
             prompt += "TARGET VOCABULARY:\n";
             prompt += `Try to naturally include the following words/phrases in your responses: ${this.preferences.targetVocabulary}\n\n`;
         }
 
-        // 3. Grammar Focus (Optional)
+        // 4. Grammar Focus (Optional)
         if (this.preferences.selectedGrammar && this.preferences.selectedGrammar.length > 0) {
             prompt += "GRAMMAR FOCUS:\n";
             prompt += "Prioritize using or eliciting the following grammar concepts:\n";
@@ -29,7 +88,7 @@ export class SpanishTutorPromptBuilder {
             prompt += "\n";
         }
 
-        // 4. Custom Instructions / Scenarios (Optional - High Priority)
+        // 5. Custom Instructions / Scenarios (Optional - High Priority)
         if (this.preferences.customInstructions) {
             prompt += "USER CUSTOM REQUEST (PRIORITY):\n";
             prompt += `The user specifically asked: "${this.preferences.customInstructions}".\nADAPT YOUR CONVERSATION TO FULFILL THIS REQUEST ABOVE ALL ELSE.\n`;
@@ -42,6 +101,22 @@ export class SpanishTutorPromptBuilder {
         prompt += "3. REFLECTIVE FEEDBACK: If the user makes a mistake, rephrase it correctly in your response naturally, or ask a clarifying question. Do not lecture.\n";
 
         return prompt;
+    }
+
+    /**
+     * Helper method to sample random words from a list
+     * @param {Array} words - Array of words to sample from
+     * @param {number} count - Number of words to sample
+     * @returns {Array} Sampled words
+     */
+    sampleWords(words, count) {
+        if (words.length <= count) {
+            return words;
+        }
+
+        // Shuffle and take first 'count' items
+        const shuffled = [...words].sort(() => Math.random() - 0.5);
+        return shuffled.slice(0, count);
     }
 
     static parseNaturalInstruction(instruction) {

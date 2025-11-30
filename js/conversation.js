@@ -1,6 +1,7 @@
 import * as webllm from "@mlc-ai/web-llm";
 import { config } from './config.js';
 import { SpanishTutorPromptBuilder } from './promptBuilder.js';
+import { saveToStorageAsync, loadFromStorage, removeFromStorageAsync } from './asyncStorage.js';
 
 export class ConversationManager {
     constructor() {
@@ -130,34 +131,29 @@ export class ConversationManager {
         this.clearStorage();
     }
 
-    saveToStorage() {
+    async saveToStorage() {
         const data = {
             messages: this.messages,
             systemPrompt: this.systemPrompt,
             timestamp: Date.now()
         };
-        localStorage.setItem(this.storageKey, JSON.stringify(data));
+        await saveToStorageAsync(this.storageKey, data);
     }
 
     loadFromStorage() {
-        const stored = localStorage.getItem(this.storageKey);
-        if (stored) {
-            try {
-                const data = JSON.parse(stored);
-                // Only load if less than 24 hours old
-                const age = Date.now() - data.timestamp;
-                if (age < 24 * 60 * 60 * 1000) {
-                    return data;
-                }
-            } catch (e) {
-                console.error('Failed to load conversation:', e);
+        const data = loadFromStorage(this.storageKey);
+        if (data) {
+            // Only load if less than 24 hours old
+            const age = Date.now() - data.timestamp;
+            if (age < 24 * 60 * 60 * 1000) {
+                return data;
             }
         }
         return null;
     }
 
-    clearStorage() {
-        localStorage.removeItem(this.storageKey);
+    async clearStorage() {
+        await removeFromStorageAsync(this.storageKey);
     }
 
     restoreFromData(data) {

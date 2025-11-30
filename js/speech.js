@@ -81,17 +81,26 @@ export class SpeechService {
     async stopRecording() {
         if (!this.isRecording) return null;
 
-        // Stop tracks
-        this.mediaStream.getTracks().forEach(track => track.stop());
-        this.processor.disconnect();
-        this.audioInput.disconnect();
-        await this.audioContext.close();
+        try {
+            // Stop tracks
+            this.mediaStream.getTracks().forEach(track => track.stop());
+            this.processor.disconnect();
+            this.audioInput.disconnect();
+            await this.audioContext.close();
 
-        this.isRecording = false;
-        console.log("Recording stopped");
+            this.isRecording = false;
+            console.log("Recording stopped");
 
-        // Process audio data
-        return await this.transcribe();
+            // Process audio data
+            return await this.transcribe();
+        } finally {
+            // Always cleanup memory, even if transcription fails
+            this.audioData = [];
+            this.mediaStream = null;
+            this.processor = null;
+            this.audioInput = null;
+            this.audioContext = null;
+        }
     }
 
     async transcribe() {

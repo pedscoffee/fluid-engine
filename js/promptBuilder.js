@@ -1,9 +1,36 @@
 import { grammarTemplates, vocabularyTemplates, difficultyLevels, baseRole } from './templates.js';
-import { ankiDataManager } from './ankiData.js';
 
 export class SpanishTutorPromptBuilder {
     constructor(userPreferences) {
         this.preferences = userPreferences;
+    }
+
+    getAnkiGuidance() {
+        // Synchronously get Anki guidance if module is already loaded
+        // This is safe because ankiData loads itself from localStorage on construction
+        try {
+            // Check if the module has been loaded
+            const stored = localStorage.getItem('soltura_anki_data');
+            if (stored) {
+                const data = JSON.parse(stored);
+                const vocabulary = data.vocabulary || [];
+                const masteryLevels = data.masteryLevels || { mastered: [], familiar: [], learning: [], new: [] };
+
+                return {
+                    mastered: masteryLevels.mastered.map(v => v.word),
+                    familiar: masteryLevels.familiar.map(v => v.word),
+                    learning: masteryLevels.learning.map(v => v.word),
+                    new: masteryLevels.new.map(v => v.word),
+                    totalWords: vocabulary.length,
+                    totalCards: data.totalCards || 0,
+                    deckCount: (data.decks || []).length
+                };
+            }
+        } catch (error) {
+            console.error('Error loading Anki guidance:', error);
+        }
+
+        return { mastered: [], familiar: [], learning: [], new: [], totalWords: 0, totalCards: 0, deckCount: 0 };
     }
 
     build() {
@@ -17,51 +44,51 @@ export class SpanishTutorPromptBuilder {
         prompt += `${levelDescription}\n\n`;
 
         // 2. Anki Spaced Repetition Vocabulary Guidance (If available)
-        const ankiGuidance = ankiDataManager.getVocabularyGuidance();
+        const ankiGuidance = this.getAnkiGuidance();
         if (ankiGuidance.totalWords > 0) {
             prompt += "ANKI VOCABULARY SCAFFOLDING:\n";
             prompt += "The user has imported their Anki deck data. Use this to create an optimal learning experience:\n\n";
 
             // Mastered words (use freely as scaffolding)
             if (ankiGuidance.mastered.length > 0) {
-                const masteredSample = this.sampleWords(ankiGuidance.mastered, 30);
+                const masteredSample = this.sampleWords(ankiGuidance.mastered, 15);
                 prompt += `MASTERED WORDS (use freely - these are well-known to the user):\n`;
                 prompt += `${masteredSample.join(', ')}\n`;
-                if (ankiGuidance.mastered.length > 30) {
-                    prompt += `...and ${ankiGuidance.mastered.length - 30} more mastered words\n`;
+                if (ankiGuidance.mastered.length > 15) {
+                    prompt += `...and ${ankiGuidance.mastered.length - 15} more mastered words\n`;
                 }
                 prompt += "\n";
             }
 
             // Familiar words (good for scaffolding)
             if (ankiGuidance.familiar.length > 0) {
-                const familiarSample = this.sampleWords(ankiGuidance.familiar, 30);
+                const familiarSample = this.sampleWords(ankiGuidance.familiar, 15);
                 prompt += `FAMILIAR WORDS (comfortable for the user - use to support learning):\n`;
                 prompt += `${familiarSample.join(', ')}\n`;
-                if (ankiGuidance.familiar.length > 30) {
-                    prompt += `...and ${ankiGuidance.familiar.length - 30} more familiar words\n`;
+                if (ankiGuidance.familiar.length > 15) {
+                    prompt += `...and ${ankiGuidance.familiar.length - 15} more familiar words\n`;
                 }
                 prompt += "\n";
             }
 
             // Learning words (current focus - use with support)
             if (ankiGuidance.learning.length > 0) {
-                const learningSample = this.sampleWords(ankiGuidance.learning, 20);
+                const learningSample = this.sampleWords(ankiGuidance.learning, 12);
                 prompt += `CURRENTLY LEARNING (use these more frequently to reinforce):\n`;
                 prompt += `${learningSample.join(', ')}\n`;
-                if (ankiGuidance.learning.length > 20) {
-                    prompt += `...and ${ankiGuidance.learning.length - 20} more learning words\n`;
+                if (ankiGuidance.learning.length > 12) {
+                    prompt += `...and ${ankiGuidance.learning.length - 12} more learning words\n`;
                 }
                 prompt += "\n";
             }
 
             // New/struggling words (introduce carefully with context)
             if (ankiGuidance.new.length > 0) {
-                const newSample = this.sampleWords(ankiGuidance.new, 15);
+                const newSample = this.sampleWords(ankiGuidance.new, 10);
                 prompt += `NEW/CHALLENGING WORDS (introduce carefully with familiar word support):\n`;
                 prompt += `${newSample.join(', ')}\n`;
-                if (ankiGuidance.new.length > 15) {
-                    prompt += `...and ${ankiGuidance.new.length - 15} more new words\n`;
+                if (ankiGuidance.new.length > 10) {
+                    prompt += `...and ${ankiGuidance.new.length - 10} more new words\n`;
                 }
                 prompt += "\n";
             }
@@ -105,6 +132,7 @@ export class SpanishTutorPromptBuilder {
 
     /**
      * Helper method to sample random words from a list
+     * Uses reservoir sampling for efficient random selection
      * @param {Array} words - Array of words to sample from
      * @param {number} count - Number of words to sample
      * @returns {Array} Sampled words
@@ -114,9 +142,15 @@ export class SpanishTutorPromptBuilder {
             return words;
         }
 
-        // Shuffle and take first 'count' items
-        const shuffled = [...words].sort(() => Math.random() - 0.5);
-        return shuffled.slice(0, count);
+        // Reservoir sampling - O(n) instead of O(n log n)
+        const result = words.slice(0, count);
+        for (let i = count; i < words.length; i++) {
+            const j = Math.floor(Math.random() * (i + 1));
+            if (j < count) {
+                result[j] = words[i];
+            }
+        }
+        return result;
     }
 
     static parseNaturalInstruction(instruction) {

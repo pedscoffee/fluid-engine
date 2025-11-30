@@ -4,7 +4,16 @@ import { getConversationManager } from './conversation.js';
 import { getSpeechService } from './speech.js';
 import { scenarios } from './scenarios.js';
 import { initTutor, getTutorManager } from './tutor.js';
-import { ankiDataManager } from './ankiData.js';
+
+// Lazy load Anki module only when needed
+let ankiDataManager = null;
+async function getAnkiDataManager() {
+    if (!ankiDataManager) {
+        const module = await import('./ankiData.js');
+        ankiDataManager = module.ankiDataManager;
+    }
+    return ankiDataManager;
+}
 
 export function initUI() {
     const preferences = new UserPreferences();
@@ -376,8 +385,9 @@ export function initUI() {
     });
 
     // Anki Import Logic
-    function updateAnkiStats() {
-        const stats = ankiDataManager.getStatistics();
+    async function updateAnkiStats() {
+        const manager = await getAnkiDataManager();
+        const stats = manager.getStatistics();
 
         if (stats.totalVocabulary > 0) {
             ankiStats.classList.remove('hidden');
@@ -392,7 +402,7 @@ export function initUI() {
         }
     }
 
-    // Initialize Anki stats on load
+    // Initialize Anki stats on load (async)
     updateAnkiStats();
 
     // APKG Import
@@ -409,10 +419,11 @@ export function initUI() {
         loadingDetail.textContent = 'Parsing APKG file and extracting vocabulary';
 
         try {
-            const result = await ankiDataManager.importAPKG(file);
+            const manager = await getAnkiDataManager();
+            const result = await manager.importAPKG(file);
 
             if (result.success) {
-                updateAnkiStats();
+                await updateAnkiStats();
                 alert(`Success! Imported ${result.cardCount} cards with ${result.vocabularyCount} unique vocabulary items from "${result.deckName}".`);
             } else {
                 alert(`Import failed: ${result.error}`);
@@ -453,10 +464,11 @@ export function initUI() {
         loadingDetail.textContent = 'Processing vocabulary';
 
         try {
-            const result = await ankiDataManager.importTSV(pendingTsvFile, masteryLevel);
+            const manager = await getAnkiDataManager();
+            const result = await manager.importTSV(pendingTsvFile, masteryLevel);
 
             if (result.success) {
-                updateAnkiStats();
+                await updateAnkiStats();
                 alert(`Success! Imported ${result.cardCount} cards with ${result.vocabularyCount} unique vocabulary items from "${result.deckName}" as "${masteryLevel}" level.`);
             } else {
                 alert(`Import failed: ${result.error}`);
@@ -476,10 +488,11 @@ export function initUI() {
     });
 
     // Clear Anki Data
-    clearAnkiBtn.addEventListener('click', () => {
+    clearAnkiBtn.addEventListener('click', async () => {
         if (confirm('Are you sure you want to clear all imported Anki data? This cannot be undone.')) {
-            ankiDataManager.clearAllData();
-            updateAnkiStats();
+            const manager = await getAnkiDataManager();
+            manager.clearAllData();
+            await updateAnkiStats();
             alert('Anki data cleared successfully.');
         }
     });
@@ -601,10 +614,15 @@ export function initUI() {
     function addMessage(text, sender) {
         const div = document.createElement('div');
         div.className = `message ${sender}`;
-
         div.textContent = text;
-        chatContainer.appendChild(div);
-        scrollToBottom();
+
+        // Use DocumentFragment to minimize reflows
+        const fragment = document.createDocumentFragment();
+        fragment.appendChild(div);
+        chatContainer.appendChild(fragment);
+
+        // Defer scroll to next frame for better performance
+        requestAnimationFrame(() => scrollToBottom());
     }
 
     function addTutorMessage(text, sender) {
@@ -624,8 +642,16 @@ export function initUI() {
         } else {
             div.innerHTML = marked.parse(text);
         }
-        tutorChat.appendChild(div);
-        tutorChat.scrollTop = tutorChat.scrollHeight;
+
+        // Use DocumentFragment for better performance
+        const fragment = document.createDocumentFragment();
+        fragment.appendChild(div);
+        tutorChat.appendChild(fragment);
+
+        // Defer scroll to next frame
+        requestAnimationFrame(() => {
+            tutorChat.scrollTop = tutorChat.scrollHeight;
+        });
     }
 
     async function handleTutorQuestion() {

@@ -1,4 +1,5 @@
 const CACHE_NAME = 'soltura-v1';
+const CDN_CACHE = 'soltura-cdn-v1';
 const APP_SHELL = [
     '/index.html',
     '/css/styles.css',
@@ -10,7 +11,19 @@ const APP_SHELL = [
     '/js/preferences.js',
     '/js/promptBuilder.js',
     '/js/templates.js',
-    '/js/webgpu-check.js'
+    '/js/webgpu-check.js',
+    '/js/asyncStorage.js',
+    '/js/tutor.js',
+    '/js/scenarios.js'
+];
+
+// CDN resources to cache (network-first strategy)
+const CDN_ORIGINS = [
+    'cdn.jsdelivr.net',
+    'cdnjs.cloudflare.com',
+    'esm.run',
+    'fonts.googleapis.com',
+    'fonts.gstatic.com'
 ];
 
 // Install event - cache app shell
@@ -33,7 +46,7 @@ self.addEventListener('activate', (event) => {
         caches.keys().then((cacheNames) => {
             return Promise.all(
                 cacheNames
-                    .filter((name) => name !== CACHE_NAME)
+                    .filter((name) => name !== CACHE_NAME && name !== CDN_CACHE)
                     .map((name) => caches.delete(name))
             );
         }).then(() => self.clients.claim())
@@ -42,11 +55,37 @@ self.addEventListener('activate', (event) => {
 
 // Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', (event) => {
-    // Skip cross-origin requests and CDN resources
+    const url = new URL(event.request.url);
+    const isCDN = CDN_ORIGINS.some(origin => url.hostname.includes(origin));
+
+    // CDN resources: Network-first, fallback to cache
+    if (isCDN) {
+        event.respondWith(
+            fetch(event.request)
+                .then((response) => {
+                    // Cache successful CDN responses
+                    if (response && response.status === 200) {
+                        const responseToCache = response.clone();
+                        caches.open(CDN_CACHE).then((cache) => {
+                            cache.put(event.request, responseToCache);
+                        });
+                    }
+                    return response;
+                })
+                .catch(() => {
+                    // Fallback to cache if network fails
+                    return caches.match(event.request);
+                })
+        );
+        return;
+    }
+
+    // Skip other cross-origin requests
     if (!event.request.url.startsWith(self.location.origin)) {
         return;
     }
 
+    // App resources: Cache-first, fallback to network
     event.respondWith(
         caches.match(event.request)
             .then((response) => {

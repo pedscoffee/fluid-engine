@@ -8,6 +8,8 @@
  * - Integration with conversation prompt building
  */
 
+import { saveToStorageAsync, loadFromStorage } from './asyncStorage.js';
+
 export class AnkiDataManager {
     constructor() {
         this.storageKey = 'soltura_anki_data';
@@ -19,13 +21,9 @@ export class AnkiDataManager {
      * Load Anki data from localStorage
      */
     loadFromStorage() {
-        try {
-            const stored = localStorage.getItem(this.storageKey);
-            if (stored) {
-                return JSON.parse(stored);
-            }
-        } catch (error) {
-            console.error('Error loading Anki data from storage:', error);
+        const stored = loadFromStorage(this.storageKey);
+        if (stored) {
+            return stored;
         }
 
         return {
@@ -43,14 +41,10 @@ export class AnkiDataManager {
     }
 
     /**
-     * Save Anki data to localStorage
+     * Save Anki data to localStorage asynchronously
      */
-    saveToStorage() {
-        try {
-            localStorage.setItem(this.storageKey, JSON.stringify(this.data));
-        } catch (error) {
-            console.error('Error saving Anki data to storage:', error);
-        }
+    async saveToStorage() {
+        await saveToStorageAsync(this.storageKey, this.data);
     }
 
     /**

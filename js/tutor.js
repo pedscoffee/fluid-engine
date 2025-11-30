@@ -57,9 +57,10 @@ export class TutorManager {
 The student wrote: "${studentText}"
 
 ${langDirective}
-If the student's message is correct and natural, praise them and do not invent errors.
-Only provide corrections if there are actual mistakes or significant unnatural phrasing.
-Provide helpful feedback based on your instructions. Be concise and encouraging.`;
+Carefully check the student's message for grammatical errors or unnatural phrasing.
+If there are errors, explain them clearly.
+If the message is correct, simply confirm it is correct without inventing improvements.
+Provide helpful feedback based on your instructions. Be concise.`;
 
             const feedback = await this._generateTutorResponse(systemPrompt, studentText);
 

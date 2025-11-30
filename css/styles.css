@@ -1,15 +1,15 @@
 :root {
-    /* Botanical Sage Green Color Palette */
-    --primary: #8B9D83;
-    --primary-hover: #6B7D63;
-    --primary-light: #E8EDE6;
-    --background: #F5F3EE;
-    --surface: #E8EBE6;
-    --surface-light: #D5DBD0;
-    --text: #2C3326;
-    --text-muted: #6B7465;
-    --accent: #7A9D76;
-    --error: #C87A5F;
+    /* Mid-Century Modern Color Palette */
+    --primary: #2D6A6A;
+    --primary-hover: #1E4F4F;
+    --primary-light: #D9E8E8;
+    --background: #FAF7F2;
+    --surface: #EDE8E0;
+    --surface-light: #DDD6CA;
+    --text: #2C2824;
+    --text-muted: #6B635A;
+    --accent: #C8763E;
+    --error: #B85C4A;
 
     /* Spacing */
     --spacing-xs: 0.25rem;
@@ -30,18 +30,18 @@
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
 
-/* Dark Mode Botanical Palette */
+/* Dark Mode Mid-Century Palette */
 [data-theme="dark"] {
-    --primary: #7A9D76;
-    --primary-hover: #5A7D56;
-    --primary-light: #3A4D36;
-    --background: #1A1F19;
-    --surface: #252B24;
-    --surface-light: #353B34;
-    --text: #E8EDE6;
-    --text-muted: #9BA499;
-    --accent: #6B8D67;
-    --error: #D89A85;
+    --primary: #4A9D9D;
+    --primary-hover: #3A7D7D;
+    --primary-light: #2A3D3D;
+    --background: #1F1D1A;
+    --surface: #2A2724;
+    --surface-light: #3A3632;
+    --text: #F5F2ED;
+    --text-muted: #A39E96;
+    --accent: #D4864E;
+    --error: #D87A68;
 }
 
 * {
@@ -260,7 +260,7 @@ textarea:focus {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: rgba(245, 243, 238, 0.95);
+    background-color: rgba(250, 247, 242, 0.95);
     backdrop-filter: blur(10px);
     z-index: 10;
     border-bottom: 1px solid var(--surface-light);
@@ -339,14 +339,14 @@ textarea:focus {
     align-items: center;
     justify-content: center;
     transition: transform 0.1s, background-color 0.2s;
-    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7);
+    box-shadow: 0 0 0 0 rgba(45, 106, 106, 0.7);
 }
 
 .mic-btn:active,
 .mic-btn.listening {
     transform: scale(0.95);
     background-color: var(--error);
-    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0.3);
+    box-shadow: 0 0 0 10px rgba(184, 92, 74, 0.3);
 }
 
 .mic-hint {
@@ -493,14 +493,14 @@ textarea:focus {
     align-items: center;
     justify-content: center;
     transition: transform 0.1s, background-color 0.2s;
-    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7);
+    box-shadow: 0 0 0 0 rgba(45, 106, 106, 0.7);
 }
 
 .mic-btn:active,
 .mic-btn.listening {
     transform: scale(0.95);
     background-color: var(--error);
-    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0.3);
+    box-shadow: 0 0 0 10px rgba(184, 92, 74, 0.3);
 }
 
 /* Settings Modal */
@@ -574,7 +574,7 @@ input:checked+.slider:before {
     position: absolute;
     bottom: 100%;
     left: 0;
-    background-color: rgba(30, 41, 59, 0.95);
+    background-color: rgba(44, 40, 36, 0.95);
     color: var(--text-muted);
     padding: var(--spacing-sm) var(--spacing-md);
     border-radius: var(--radius-md);

@@ -1,0 +1,23 @@
+aunque	although
+todavía	still/yet
+durante	during
+mientras	while
+además	besides/moreover
+sin embargo	however
+por lo tanto	therefore
+a través de	through
+en cuanto a	regarding
+de repente	suddenly
+intentar	to try/attempt
+lograr	to achieve
+mejorar	to improve
+aprender	to learn
+enseñar	to teach
+recordar	to remember
+olvidar	to forget
+desarrollo	development
+ambiente	environment
+actualidad	current situation
+conocimiento	knowledge
+experiencia	experience
+oportunidad	opportunity

@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APKG Test File Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #2D6A6A;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #2D6A6A;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 10px 10px 0;
+        }
+        button:hover {
+            background: #1E4F4F;
+        }
+        .info {
+            background: #D9E8E8;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+        .deck-option {
+            background: #f9f9f9;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border-left: 4px solid #2D6A6A;
+        }
+        .deck-option h3 {
+            margin-top: 0;
+            color: #2D6A6A;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>APKG Test File Generator</h1>
+        <div class="info">
+            <strong>Purpose:</strong> Generate test APKG files with realistic Anki scheduling data to test the Soltura Anki integration.
+            Each deck contains Spanish vocabulary cards with different interval distributions to test the mastery level categorization.
+        </div>
+
+        <h2>Available Test Decks</h2>
+
+        <div class="deck-option">
+            <h3>1. Beginner's Spanish (Mixed Levels)</h3>
+            <p><strong>Content:</strong> 50 common Spanish words across all mastery levels</p>
+            <ul>
+                <li>Mastered (90+ days): 15 cards - Basic words like "hola", "casa", "agua"</li>
+                <li>Familiar (21-89 days): 15 cards - Common verbs and nouns</li>
+                <li>Learning (7-20 days): 12 cards - Useful phrases and adjectives</li>
+                <li>New (&lt;7 days): 8 cards - Recently added vocabulary</li>
+            </ul>
+            <button onclick="generateBeginnerDeck()">Generate Beginner Deck</button>
+        </div>
+
+        <div class="deck-option">
+            <h3>2. Intermediate Spanish (Well-Studied)</h3>
+            <p><strong>Content:</strong> 40 intermediate words, mostly familiar/mastered</p>
+            <ul>
+                <li>Mastered: 20 cards - Well-practiced intermediate vocabulary</li>
+                <li>Familiar: 15 cards - Recent but comfortable words</li>
+                <li>Learning: 5 cards - New intermediate concepts</li>
+            </ul>
+            <button onclick="generateIntermediateDeck()">Generate Intermediate Deck</button>
+        </div>
+
+        <div class="deck-option">
+            <h3>3. New Learner (Mostly New)</h3>
+            <p><strong>Content:</strong> 30 basic words, mostly new or learning</p>
+            <ul>
+                <li>Mastered: 5 cards - Only a few well-known words</li>
+                <li>Familiar: 5 cards</li>
+                <li>Learning: 10 cards</li>
+                <li>New: 10 cards</li>
+            </ul>
+            <button onclick="generateNewLearnerDeck()">Generate New Learner Deck</button>
+        </div>
+
+        <div class="deck-option">
+            <h3>4. Generate All Three Decks</h3>
+            <p>Download all three test decks at once to test multiple imports.</p>
+            <button onclick="generateAllDecks()">Generate All Test Decks</button>
+        </div>
+
+        <div id="status"></div>
+    </div>
+
+    <script>
+        // Test data sets
+        const beginnerWords = [
+            // Mastered (15)
+            ["hola", "hello", 180],
+            ["adiós", "goodbye", 150],
+            ["gracias", "thank you", 200],
+            ["por favor", "please", 120],
+            ["sí", "yes", 250],
+            ["no", "no", 300],
+            ["casa", "house", 140],
+            ["comer", "to eat", 160],
+            ["beber", "to drink", 130],
+            ["agua", "water", 190],
+            ["gato", "cat", 110],
+            ["perro", "dog", 175],
+            ["grande", "big", 145],
+            ["pequeño", "small", 155],
+            ["madre", "mother", 220],
+
+            // Familiar (15)
+            ["padre", "father", 45],
+            ["hermano", "brother", 60],
+            ["hermana", "sister", 55],
+            ["amigo", "friend", 40],
+            ["ciudad", "city", 50],
+            ["calle", "street", 35],
+            ["coche", "car", 70],
+            ["tiempo", "time/weather", 42],
+            ["día", "day", 65],
+            ["noche", "night", 38],
+            ["rojo", "red", 48],
+            ["azul", "blue", 52],
+            ["verde", "green", 44],
+            ["libro", "book", 58],
+            ["mesa", "table", 36],
+
+            // Learning (12)
+            ["aunque", "although", 12],
+            ["todavía", "still/yet", 15],
+            ["durante", "during", 10],
+            ["mientras", "while", 18],
+            ["además", "besides", 14],
+            ["sin embargo", "however", 8],
+            ["querer", "to want", 16],
+            ["poder", "to be able", 11],
+            ["deber", "should/must", 13],
+            ["tener", "to have", 19],
+            ["hacer", "to do/make", 17],
+            ["decir", "to say/tell", 9],
+
+            // New (8)
+            ["imprescindible", "essential", 2],
+            ["desarrollo", "development", 4],
+            ["ambiente", "environment", 1],
+            ["conocimiento", "knowledge", 5],
+            ["experiencia", "experience", 3],
+            ["oportunidad", "opportunity", 6],
+            ["lograr", "to achieve", 2],
+            ["mejorar", "to improve", 4]
+        ];
+
+        const intermediateWords = [
+            // Mastered (20)
+            ["aunque", "although", 180],
+            ["todavía", "still/yet", 160],
+            ["durante", "during", 140],
+            ["mientras", "while", 200],
+            ["además", "besides", 120],
+            ["sin embargo", "however", 190],
+            ["por lo tanto", "therefore", 150],
+            ["a través de", "through", 170],
+            ["intentar", "to try", 145],
+            ["lograr", "to achieve", 135],
+            ["mejorar", "to improve", 165],
+            ["aprender", "to learn", 210],
+            ["enseñar", "to teach", 125],
+            ["recordar", "to remember", 155],
+            ["olvidar", "to forget", 185],
+            ["desarrollo", "development", 130],
+            ["ambiente", "environment", 175],
+            ["conocimiento", "knowledge", 195],
+            ["experiencia", "experience", 140],
+            ["oportunidad", "opportunity", 160],
+
+            // Familiar (15)
+            ["actualidad", "current situation", 45],
+            ["en cuanto a", "regarding", 55],
+            ["de repente", "suddenly", 38],
+            ["asimismo", "likewise", 62],
+            ["no obstante", "nevertheless", 42],
+            ["cabe destacar", "worth noting", 50],
+            ["desempeñar", "to perform", 48],
+            ["promover", "to promote", 35],
+            ["fomentar", "to foster", 58],
+            ["abarcar", "to encompass", 44],
+            ["abordar", "to address", 52],
+            ["pertenecer", "to belong", 40],
+            ["corresponder", "to correspond", 46],
+            ["provenir", "to come from", 54],
+            ["surgir", "to arise", 36],
+
+            // Learning (5)
+            ["subyacente", "underlying", 12],
+            ["índole", "nature/kind", 15],
+            ["menoscabar", "to undermine", 10],
+            ["suscitar", "to provoke", 18],
+            ["denotar", "to denote", 14]
+        ];
+
+        const newLearnerWords = [
+            // Mastered (5)
+            ["hola", "hello", 120],
+            ["gracias", "thank you", 150],
+            ["sí", "yes", 180],
+            ["no", "no", 200],
+            ["agua", "water", 110],
+
+            // Familiar (5)
+            ["casa", "house", 45],
+            ["comer", "to eat", 38],
+            ["perro", "dog", 52],
+            ["grande", "big", 40],
+            ["día", "day", 48],
+
+            // Learning (10)
+            ["aunque", "although", 12],
+            ["todavía", "still", 15],
+            ["amigo", "friend", 10],
+            ["ciudad", "city", 18],
+            ["tiempo", "time", 14],
+            ["querer", "to want", 8],
+            ["hacer", "to do", 16],
+            ["libro", "book", 11],
+            ["mesa", "table", 13],
+            ["rojo", "red", 9],
+
+            // New (10)
+            ["mientras", "while", 2],
+            ["además", "besides", 4],
+            ["durante", "during", 1],
+            ["poder", "to be able", 5],
+            ["deber", "should", 3],
+            ["verde", "green", 6],
+            ["hermano", "brother", 2],
+            ["calle", "street", 4],
+            ["noche", "night", 3],
+            ["pequeño", "small", 5]
+        ];
+
+        async function generateAPKG(deckName, words) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = 'status';
+            statusDiv.textContent = `Generating ${deckName}...`;
+
+            try {
+                // Initialize sql.js
+                const SQL = await initSqlJs({
+                    locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`
+                });
+
+                // Create new database
+                const db = new SQL.Database();
+
+                // Create Anki database schema (simplified version)
+                db.run(`
+                    CREATE TABLE col (
+                        id INTEGER PRIMARY KEY,
+                        crt INTEGER NOT NULL,
+                        mod INTEGER NOT NULL,
+                        scm INTEGER NOT NULL,
+                        ver INTEGER NOT NULL,
+                        dty INTEGER NOT NULL,
+                        usn INTEGER NOT NULL,
+                        ls INTEGER NOT NULL,
+                        conf TEXT NOT NULL,
+                        models TEXT NOT NULL,
+                        decks TEXT NOT NULL,
+                        dconf TEXT NOT NULL,
+                        tags TEXT NOT NULL
+                    )
+                `);
+
+                db.run(`
+                    CREATE TABLE notes (
+                        id INTEGER PRIMARY KEY,
+                        guid TEXT NOT NULL,
+                        mid INTEGER NOT NULL,
+                        mod INTEGER NOT NULL,
+                        usn INTEGER NOT NULL,
+                        tags TEXT NOT NULL,
+                        flds TEXT NOT NULL,
+                        sfld TEXT NOT NULL,
+                        csum INTEGER NOT NULL,
+                        flags INTEGER NOT NULL,
+                        data TEXT NOT NULL
+                    )
+                `);
+
+                db.run(`
+                    CREATE TABLE cards (
+                        id INTEGER PRIMARY KEY,
+                        nid INTEGER NOT NULL,
+                        did INTEGER NOT NULL,
+                        ord INTEGER NOT NULL,
+                        mod INTEGER NOT NULL,
+                        usn INTEGER NOT NULL,
+                        type INTEGER NOT NULL,
+                        queue INTEGER NOT NULL,
+                        due INTEGER NOT NULL,
+                        ivl INTEGER NOT NULL,
+                        factor INTEGER NOT NULL,
+                        reps INTEGER NOT NULL,
+                        lapses INTEGER NOT NULL,
+                        left INTEGER NOT NULL,
+                        odue INTEGER NOT NULL,
+                        odid INTEGER NOT NULL,
+                        flags INTEGER NOT NULL,
+                        data TEXT NOT NULL
+                    )
+                `);
+
+                // Insert collection data
+                const now = Date.now();
+                const models = JSON.stringify({
+                    "1": {
+                        "id": 1,
+                        "name": "Basic",
+                        "flds": [
+                            {"name": "Front", "ord": 0},
+                            {"name": "Back", "ord": 1}
+                        ]
+                    }
+                });
+
+                const decks = JSON.stringify({
+                    "1": {
+                        "id": 1,
+                        "name": deckName
+                    }
+                });
+
+                db.run(
+                    "INSERT INTO col VALUES (1, ?, ?, 0, 11, 0, 0, 0, '{}', ?, ?, '{}', '{}')",
+                    [now, now, models, decks]
+                );
+
+                // Insert notes and cards
+                words.forEach((word, idx) => {
+                    const noteId = idx + 1;
+                    const cardId = idx + 1;
+                    const [spanish, english, interval] = word;
+
+                    // Determine card type based on interval
+                    let cardType, queue;
+                    if (interval === 0 || interval < 7) {
+                        cardType = 0; // new
+                        queue = 0;
+                    } else {
+                        cardType = 2; // review
+                        queue = 2;
+                    }
+
+                    const fields = `${spanish}\x1f${english}`;
+                    const ease = 2500; // 250% default ease
+
+                    // Insert note
+                    db.run(
+                        "INSERT INTO notes VALUES (?, ?, 1, ?, 0, '', ?, ?, 0, 0, '')",
+                        [noteId, `guid${noteId}`, now, fields, spanish]
+                    );
+
+                    // Insert card
+                    db.run(
+                        "INSERT INTO cards VALUES (?, ?, 1, 0, ?, 0, ?, ?, 0, ?, ?, 0, 0, 0, 0, 0, 0, '')",
+                        [cardId, noteId, now, cardType, queue, interval, ease]
+                    );
+                });
+
+                // Export database to binary
+                const dbData = db.export();
+                db.close();
+
+                // Create ZIP file (APKG format)
+                const zip = new JSZip();
+                zip.file("collection.anki21", dbData);
+                zip.file("media", "{}"); // Empty media file
+
+                // Generate and download
+                const blob = await zip.generateAsync({type: "blob"});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${deckName.replace(/\s+/g, '-')}.apkg`;
+                a.click();
+                URL.revokeObjectURL(url);
+
+                statusDiv.className = 'status success';
+                statusDiv.textContent = `✓ Successfully generated ${deckName} (${words.length} cards)`;
+
+                return true;
+            } catch (error) {
+                console.error('Error generating APKG:', error);
+                statusDiv.className = 'status error';
+                statusDiv.textContent = `✗ Error generating ${deckName}: ${error.message}`;
+                return false;
+            }
+        }
+
+        async function generateBeginnerDeck() {
+            await generateAPKG("Beginner Spanish Mixed", beginnerWords);
+        }
+
+        async function generateIntermediateDeck() {
+            await generateAPKG("Intermediate Spanish", intermediateWords);
+        }
+
+        async function generateNewLearnerDeck() {
+            await generateAPKG("New Learner Spanish", newLearnerWords);
+        }
+
+        async function generateAllDecks() {
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = 'status';
+            statusDiv.textContent = 'Generating all decks...';
+
+            let success = true;
+            success = await generateAPKG("Beginner Spanish Mixed", beginnerWords) && success;
+            await new Promise(resolve => setTimeout(resolve, 500));
+            success = await generateAPKG("Intermediate Spanish", intermediateWords) && success;
+            await new Promise(resolve => setTimeout(resolve, 500));
+            success = await generateAPKG("New Learner Spanish", newLearnerWords) && success;
+
+            if (success) {
+                statusDiv.className = 'status success';
+                statusDiv.textContent = '✓ Successfully generated all 3 test decks!';
+            }
+        }
+    </script>
+</body>
+</html>

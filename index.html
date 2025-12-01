@@ -258,6 +258,14 @@
                     <span id="connection-status">Ready</span>
                 </div>
                 <div class="top-actions">
+                    <button id="debug-prompt-btn" class="icon-btn" aria-label="View System Prompt" title="View System Prompt (Debug)">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                    </button>
                     <button id="toggle-tutor-btn" class="icon-btn" aria-label="Toggle Tutor Panel"
                         title="Toggle Tutor Panel">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -464,6 +472,21 @@
                 <div class="modal-actions">
                     <button id="cancel-tsv-btn" class="btn-secondary">Cancel</button>
                     <button id="confirm-tsv-btn" class="btn-primary">Import</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Debug: System Prompt Modal -->
+        <div id="debug-prompt-modal" class="modal hidden">
+            <div class="modal-content" style="max-width: 800px; max-height: 80vh;">
+                <h3>System Prompt (Debug)</h3>
+                <p class="modal-description">This is the complete prompt sent to the AI, showing your level and Anki integration:</p>
+                <div style="background: #f5f5f5; padding: 16px; border-radius: 8px; max-height: 60vh; overflow-y: auto; white-space: pre-wrap; font-family: monospace; font-size: 12px; line-height: 1.5;">
+                    <div id="debug-prompt-content">No system prompt generated yet. Start a conversation to see it.</div>
+                </div>
+                <div class="modal-actions">
+                    <button id="copy-prompt-btn" class="btn-secondary">Copy to Clipboard</button>
+                    <button id="close-debug-prompt-btn" class="btn-primary">Close</button>
                 </div>
             </div>
         </div>

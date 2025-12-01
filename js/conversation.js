@@ -56,6 +56,15 @@ export class ConversationManager {
         this.messages = [
             { role: "system", content: this.systemPrompt }
         ];
+
+        // Debug: Log the system prompt so users can verify level and Anki integration
+        console.log("=== SYSTEM PROMPT GENERATED ===");
+        console.log(this.systemPrompt);
+        console.log("=== END SYSTEM PROMPT ===");
+    }
+
+    getSystemPrompt() {
+        return this.systemPrompt;
     }
 
     async generateResponse(userMessage) {

@@ -37,8 +37,8 @@ export class SpanishTutorPromptBuilder {
         let prompt = baseRole + "\n\n";
 
         // 1. Difficulty Level (Required)
-        const level = this.preferences.difficultyLevel || 'B1';
-        const levelDescription = difficultyLevels[level] || difficultyLevels['B1'];
+        const level = this.preferences.difficultyLevel || 'Auto';
+        const levelDescription = difficultyLevels[level] || difficultyLevels['Auto'];
 
         prompt += `CURRENT DIFFICULTY LEVEL: ${level}\n`;
         prompt += `${levelDescription}\n\n`;

@@ -87,8 +87,8 @@
                     <div class="form-group">
                         <label>Proficiency Level</label>
                         <div class="grammar-grid">
-                            <label class="checkbox-item" style="grid-column: 1 / -1; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: 500;">
-                                <input type="radio" name="difficulty" value="Auto"> Auto - Match My Level
+                            <label class="checkbox-item">
+                                <input type="radio" name="difficulty" value="Auto" checked> Auto
                             </label>
                             <label class="checkbox-item">
                                 <input type="radio" name="difficulty" value="A1"> A1 - Beginner
@@ -97,7 +97,7 @@
                                 <input type="radio" name="difficulty" value="A2"> A2 - Elementary
                             </label>
                             <label class="checkbox-item">
-                                <input type="radio" name="difficulty" value="B1" checked> B1 - Intermediate
+                                <input type="radio" name="difficulty" value="B1"> B1 - Intermediate
                             </label>
                             <label class="checkbox-item">
                                 <input type="radio" name="difficulty" value="B2"> B2 - Upper Int.
@@ -108,8 +108,11 @@
                             <label class="checkbox-item">
                                 <input type="radio" name="difficulty" value="C2"> C2 - Proficient
                             </label>
+                            <label class="checkbox-item">
+                                <input type="radio" name="difficulty" value="Native"> Native
+                            </label>
                         </div>
-                        <p class="hint">Select your current level to tailor the AI's complexity. Auto mode dynamically adapts to your demonstrated level.</p>
+                        <p class="hint">Auto adapts to your level. Select a specific level for consistent difficulty. Native has no constraints.</p>
                     </div>
 
                     <!-- Shared Vocabulary Input (Available in all modes) -->

@@ -20,6 +20,8 @@
 		E00021 /* Scenarios.swift in Sources */ = {isa = PBXBuildFile; fileRef = E00022; };
 		E00023 /* UserPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = E00024; };
 		E00025 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E00026; };
+		E00027 /* ModelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E00028; };
+		E00029 /* ModelDownloadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E00030; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,7 +39,9 @@
 		E00022 /* Scenarios.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scenarios.swift; sourceTree = "<group>"; };
 		E00024 /* UserPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPreferences.swift; sourceTree = "<group>"; };
 		E00026 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		E00028 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E00028 /* ModelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelManager.swift; sourceTree = "<group>"; };
+		E00030 /* ModelDownloadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelDownloadView.swift; sourceTree = "<group>"; };
+		E00031 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,6 +88,7 @@
 			isa = PBXGroup;
 			children = (
 				E00004 /* ContentView.swift */,
+				E00030 /* ModelDownloadView.swift */,
 				E00006 /* SetupView.swift */,
 				E00008 /* ConversationView.swift */,
 				E00010 /* TutorPanelView.swift */,
@@ -104,6 +109,7 @@
 			isa = PBXGroup;
 			children = (
 				E00012 /* LLMManager.swift */,
+				E00028 /* ModelManager.swift */,
 				E00014 /* SpeechManager.swift */,
 				E00016 /* PromptBuilder.swift */,
 				E00018 /* ConversationManager.swift */,
@@ -180,10 +186,12 @@
 			files = (
 				E00001 /* SolturaApp.swift in Sources */,
 				E00003 /* ContentView.swift in Sources */,
+				E00029 /* ModelDownloadView.swift in Sources */,
 				E00005 /* SetupView.swift in Sources */,
 				E00007 /* ConversationView.swift in Sources */,
 				E00009 /* TutorPanelView.swift in Sources */,
 				E00011 /* LLMManager.swift in Sources */,
+				E00027 /* ModelManager.swift in Sources */,
 				E00013 /* SpeechManager.swift in Sources */,
 				E00015 /* PromptBuilder.swift in Sources */,
 				E00017 /* ConversationManager.swift in Sources */,

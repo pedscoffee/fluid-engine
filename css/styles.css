@@ -765,6 +765,11 @@ input:checked+.slider:before {
     background: var(--primary-light);
 }
 
+.checkbox-item-auto {
+    width: fit-content;
+    min-width: auto;
+}
+
 /* Mode Inputs Visibility */
 .mode-inputs.hidden {
     display: none;
@@ -1346,6 +1351,39 @@ input:checked+.slider:before {
 
 .btn-text:hover {
     background-color: rgba(184, 92, 74, 0.1);
+}
+
+/* Support Section */
+.support-section {
+    margin-top: var(--spacing-lg);
+    text-align: center;
+    padding: var(--spacing-md) 0;
+}
+
+.support-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-md);
+    transition: color 0.2s, background-color 0.2s;
+}
+
+.support-link:hover {
+    color: var(--primary);
+    background-color: var(--primary-light);
+}
+
+.support-link svg {
+    transition: transform 0.2s;
+}
+
+.support-link:hover svg {
+    transform: scale(1.1);
 }
 
 /* Responsive adjustments for Anki section */

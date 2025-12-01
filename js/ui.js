@@ -47,6 +47,13 @@ export function initUI() {
     const voiceSelect = document.getElementById('voice-select');
     const closeSettingsBtn = document.getElementById('close-settings-btn');
 
+    // Debug Modal Elements
+    const debugPromptBtn = document.getElementById('debug-prompt-btn');
+    const debugPromptModal = document.getElementById('debug-prompt-modal');
+    const debugPromptContent = document.getElementById('debug-prompt-content');
+    const closeDebugPromptBtn = document.getElementById('close-debug-prompt-btn');
+    const copyPromptBtn = document.getElementById('copy-prompt-btn');
+
     // Tutor Panel Elements
     const csvUpload = document.getElementById('csv-upload');
     const importCsvBtn = document.getElementById('import-csv-btn');
@@ -339,11 +346,51 @@ export function initUI() {
         settingsModal.classList.add('hidden');
     });
 
+    // Debug Prompt Modal Handlers
+    debugPromptBtn.addEventListener('click', () => {
+        const conversationManager = getConversationManager();
+        if (conversationManager) {
+            const systemPrompt = conversationManager.getSystemPrompt();
+            if (systemPrompt) {
+                debugPromptContent.textContent = systemPrompt;
+            } else {
+                debugPromptContent.textContent = "No system prompt generated yet. Start a conversation to see it.";
+            }
+        } else {
+            debugPromptContent.textContent = "Conversation manager not initialized.";
+        }
+        debugPromptModal.classList.remove('hidden');
+    });
+
+    closeDebugPromptBtn.addEventListener('click', () => {
+        debugPromptModal.classList.add('hidden');
+    });
+
+    copyPromptBtn.addEventListener('click', async () => {
+        const text = debugPromptContent.textContent;
+        try {
+            await navigator.clipboard.writeText(text);
+            copyPromptBtn.textContent = 'Copied!';
+            setTimeout(() => {
+                copyPromptBtn.textContent = 'Copy to Clipboard';
+            }, 2000);
+        } catch (err) {
+            console.error('Failed to copy:', err);
+            copyPromptBtn.textContent = 'Failed to copy';
+            setTimeout(() => {
+                copyPromptBtn.textContent = 'Copy to Clipboard';
+            }, 2000);
+        }
+    });
+
     // Keyboard accessibility for modals
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             if (!settingsModal.classList.contains('hidden')) {
                 settingsModal.classList.add('hidden');
+            }
+            if (!debugPromptModal.classList.contains('hidden')) {
+                debugPromptModal.classList.add('hidden');
             }
         }
     });

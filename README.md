@@ -4,7 +4,6 @@
 
 Practice Spanish naturally with an AI tutor that runs entirely in your browser. No server, no subscriptions, complete privacy.
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![WebGPU](https://img.shields.io/badge/WebGPU-required-green.svg)
 ![Browser](https://img.shields.io/badge/browser-Chrome%20113%2B-orange.svg)
 

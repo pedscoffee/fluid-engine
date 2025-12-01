@@ -744,8 +744,8 @@ input:checked+.slider:before {
 
 /* Grammar Grid */
 .grammar-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
     gap: var(--spacing-sm);
     margin-top: var(--spacing-sm);
 }
@@ -759,7 +759,14 @@ input:checked+.slider:before {
     border-radius: var(--radius-sm);
     cursor: pointer;
     font-size: 0.9rem;
+    flex: 1;
+    min-width: 120px;
+    justify-content: center; /* Center content */
 }
+
+.checkbox-item.item-auto {
+    flex: 0 1 auto; /* Don't grow, shrink if needed, base on content */
+    min-width: auto; /* Allow it to be smaller than others */}
 
 .checkbox-item:hover {
     background: var(--primary-light);

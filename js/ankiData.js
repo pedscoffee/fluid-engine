@@ -94,11 +94,9 @@ export class AnkiDataManager {
 
             // Look for the collection database
             // Modern Anki uses collection.anki21 or collection.anki21b
-            // We prioritize collection.anki2 (SQLite) because sql.js can read it directly
-            // collection.anki21b is Zstd compressed and requires decompression which we don't support yet
-            let dbFile = zip.file('collection.anki2') ||
+            let dbFile = zip.file('collection.anki21b') ||
                          zip.file('collection.anki21') ||
-                         zip.file('collection.anki21b');
+                         zip.file('collection.anki2');
 
             if (!dbFile) {
                 throw new Error('No collection database found in APKG file');

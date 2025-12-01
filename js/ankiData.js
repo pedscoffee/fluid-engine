@@ -93,42 +93,19 @@ export class AnkiDataManager {
             const zip = await JSZip.loadAsync(arrayBuffer);
 
             // Look for the collection database
-            // Modern Anki uses collection.anki21 or collection.anki21b (Zstd compressed)
-            // Legacy uses collection.anki2
+            // Modern Anki uses collection.anki21 or collection.anki21b
+            // We prioritize collection.anki2 (SQLite) because sql.js can read it directly
+            // collection.anki21b is Zstd compressed and requires decompression which we don't support yet
+            let dbFile = zip.file('collection.anki2') ||
+                         zip.file('collection.anki21') ||
+                         zip.file('collection.anki21b');
 
-            let dbData;
-
-            // Try Zstd compressed file first (collection.anki21b)
-            const zstdFile = zip.file('collection.anki21b');
-            if (zstdFile) {
-                console.log('Found compressed collection.anki21b, attempting decompression...');
-                const compressedData = await zstdFile.async('uint8array');
-
-                if (window.fzstd) {
-                    try {
-                        dbData = window.fzstd.decompress(compressedData);
-                        console.log('Decompression successful');
-                    } catch (e) {
-                        console.error('Decompression failed:', e);
-                        // Fallback to other files if decompression fails
-                    }
-                } else {
-                    console.warn('fzstd library not loaded, skipping compressed file');
-                }
+            if (!dbFile) {
+                throw new Error('No collection database found in APKG file');
             }
 
-            // If no dbData yet, try uncompressed files
-            if (!dbData) {
-                const sqliteFile = zip.file('collection.anki21') || zip.file('collection.anki2');
-                if (sqliteFile) {
-                    console.log(`Found uncompressed database: ${sqliteFile.name}`);
-                    dbData = await sqliteFile.async('uint8array');
-                }
-            }
-
-            if (!dbData) {
-                throw new Error('No readable collection database found in APKG file');
-            }
+            // Extract the database
+            const dbData = await dbFile.async('uint8array');
 
             // Open the database with sql.js
             const db = new SQL.Database(dbData);
@@ -208,12 +185,8 @@ export class AnkiDataManager {
                     // Parse the fields (tab-separated in Anki)
                     const fields = cardData.fields ? cardData.fields.split('\x1f') : [];
 
-                    // Extract Spanish text (assumes first field is Spanish/Front)
-                    // This is a heuristic: usually the first field is the "Question" or "Word"
+                    // Extract Spanish text (assumes front of card is Spanish)
                     const spanishText = this.extractTextFromHTML(fields[0] || '');
-
-                    // Second field is often the Back/English, but not always. 
-                    // We store it for reference but don't rely on it for vocab extraction.
                     const englishText = fields[1] ? this.extractTextFromHTML(fields[1]) : '';
 
                     // Only process if we have Spanish text
@@ -282,7 +255,7 @@ export class AnkiDataManager {
                 if (spanish) {
                     // Assign interval based on manual mastery level
                     let interval = 0;
-                    switch (masteryLevel) {
+                    switch(masteryLevel) {
                         case 'mastered': interval = 180; break;  // 6 months
                         case 'familiar': interval = 45; break;   // 1.5 months
                         case 'learning': interval = 14; break;   // 2 weeks
@@ -365,10 +338,7 @@ export class AnkiDataManager {
             'de', 'del', 'al', 'en', 'con', 'por', 'para', 'sin',
             'que', 'qué', 'como', 'cómo', 'donde', 'dónde',
             'es', 'son', 'está', 'están', 'ser', 'estar',
-            'hay', 'muy', 'más', 'menos', 'tan', 'tanto',
-            // Anki specific and metadata words to exclude
-            'anki', 'card', 'cloze', 'type', 'front', 'back', 'extra',
-            'sound', 'image', 'nbsp', 'br', 'div', 'span', 'class', 'style'
+            'hay', 'muy', 'más', 'menos', 'tan', 'tanto'
         ]);
 
         return words.filter(word => !excludeWords.has(word));

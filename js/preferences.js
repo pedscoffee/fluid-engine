@@ -10,7 +10,7 @@ export class UserPreferences {
             return JSON.parse(stored);
         }
         return {
-            difficultyLevel: 'B1',
+            difficultyLevel: 'Auto',
             grammarFocus: [],
             vocabularyFocus: [],
             customInstructions: '',

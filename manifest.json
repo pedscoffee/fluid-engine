@@ -5,8 +5,8 @@
     "start_url": "/index.html",
     "scope": "/",
     "display": "standalone",
-    "background_color": "#0f172a",
-    "theme_color": "#6366f1",
+    "background_color": "#FAF7F2",
+    "theme_color": "#2D6A6A",
     "icons": [
         {
             "src": "assets/icon-192.png",
@@ -20,6 +20,9 @@
         }
     ],
     "orientation": "portrait",
-    "categories": ["education", "productivity"],
+    "categories": [
+        "education",
+        "productivity"
+    ],
     "lang": "en-US"
 }

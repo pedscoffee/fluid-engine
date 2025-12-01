@@ -1,4 +1,4 @@
-const CACHE_NAME = 'soltura-v1';
+const CACHE_NAME = 'soltura-v3';
 const CDN_CACHE = 'soltura-cdn-v1';
 const APP_SHELL = [
     '/index.html',

@@ -522,14 +522,73 @@
                         <option value="">Default</option>
                     </select>
                 </div>
+                <div class="setting-item">
+                    <label>Install App</label>
+                    <button id="install-app-btn" class="btn-secondary btn-small">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Instructions
+                    </button>
+                </div>
                 <div class="modal-actions">
                     <button id="close-settings-btn" class="btn-primary">Done</button>
                 </div>
             </div>
         </div>
 
-        <!-- TSV Import Modal -->
-        <div id="tsv-import-modal" class="modal hidden">
+        <!-- Install Instructions Modal -->
+        <div id="install-modal" class="modal hidden">
+            <div class="modal-content">
+                <h3>Install Soltura</h3>
+                <div class="install-tabs">
+                    <div class="install-section">
+                        <h4><span class="icon">🍎</span> iOS (iPhone/iPad)</h4>
+                        <ol>
+                            <li>Tap the <strong>Share</strong> button <svg
+                                    style="display:inline-block; vertical-align:middle" width="16" height="16"
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                                    <polyline points="16 6 12 2 8 6" />
+                                    <line x1="12" y1="2" x2="12" y2="15" />
+                                </svg> in Safari.</li>
+                            <li>Scroll down and tap <strong>Add to Home Screen</strong>.</li>
+                            <li>Tap <strong>Add</strong> in the top right.</li>
+                        </ol>
+                    </div>
+                    <div class="install-section">
+                        <h4><span class="icon">🤖</span> Android</h4>
+                        <ol>
+                            <li>Tap the <strong>Menu</strong> (three dots) in Chrome.</li>
+                            <li>Tap <strong>Install App</strong> or <strong>Add to Home screen</strong>.</li>
+                            <li>Follow the on-screen prompts.</li>
+                        </ol>
+                    </div>
+                    <div class="install-section">
+                        <h4><span class="icon">💻</span> Desktop (Chrome/Edge)</h4>
+                        <ol>
+                            <li>Click the <strong>Install</strong> icon <svg
+                                    style="display:inline-block; vertical-align:middle" width="16" height="16"
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                    <polyline points="7 10 12 15 17 10" />
+                                    <line x1="12" y1="15" x2="12" y2="3" />
+                                </svg> in the address bar.</li>
+                            <li>Click <strong>Install</strong>.</li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button id="close-install-btn" class="btn-primary">Got it</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Debug: System Prompt Modal -->
+        <div id="debug-prompt-modal" class="modal hidden">
             <div class="modal-content">
                 <h3>Import TSV/Text File</h3>
                 <p class="modal-description">Since text files don't contain scheduling data, please select the mastery

@@ -14,7 +14,8 @@ const APP_SHELL = [
     '/js/webgpu-check.js',
     '/js/asyncStorage.js',
     '/js/tutor.js',
-    '/js/scenarios.js'
+    '/js/scenarios.js',
+    '/js/ankiData.js'
 ];
 
 // CDN resources to cache (network-first strategy)

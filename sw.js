@@ -1,26 +1,26 @@
-const CACHE_NAME = 'soltura-v3';
+const CACHE_NAME = 'soltura-v4';
 const CDN_CACHE = 'soltura-cdn-v1';
 const APP_SHELL = [
-    '/index.html',
-    '/css/styles.css',
-    '/js/app.js',
-    '/js/ui.js',
-    '/js/conversation.js',
-    '/js/speech.js',
-    '/js/config.js',
-    '/js/preferences.js',
-    '/js/promptBuilder.js',
-    '/js/templates.js',
-    '/js/webgpu-check.js',
-    '/js/asyncStorage.js',
-    '/js/tutor.js',
-    '/js/scenarios.js',
-    '/js/ankiData.js',
-    '/images/logo.png',
-    '/images/icon.png',
-    '/images/favicon.ico',
-    '/assets/icon-192.png',
-    '/assets/icon-512.png'
+    './index.html',
+    './css/styles.css',
+    './js/app.js',
+    './js/ui.js',
+    './js/conversation.js',
+    './js/speech.js',
+    './js/config.js',
+    './js/preferences.js',
+    './js/promptBuilder.js',
+    './js/templates.js',
+    './js/webgpu-check.js',
+    './js/asyncStorage.js',
+    './js/tutor.js',
+    './js/scenarios.js',
+    './js/ankiData.js',
+    './images/logo.png',
+    './images/icon.png',
+    './images/favicon.ico',
+    './assets/icon-192.png',
+    './assets/icon-512.png'
 ];
 
 // CDN resources to cache (network-first strategy)

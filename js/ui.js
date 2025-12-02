@@ -435,7 +435,6 @@ export function initUI() {
     async function updateAnkiStats() {
         const manager = await getAnkiDataManager();
         const stats = manager.getStatistics();
-
         if (stats.totalVocabulary > 0) {
             ankiStats.classList.remove('hidden');
             document.getElementById('anki-deck-count').textContent = stats.decks;
@@ -543,6 +542,48 @@ export function initUI() {
             alert('Anki data cleared successfully.');
         }
     });
+
+    // Export Anki Data
+    const exportAnkiBtn = document.getElementById('export-anki-btn');
+    if (exportAnkiBtn) {
+        exportAnkiBtn.addEventListener('click', async () => {
+            const manager = await getAnkiDataManager();
+            const decks = manager.data.decks;
+
+            if (decks.length === 0) {
+                alert('No decks to export.');
+                return;
+            }
+
+            // Export the first deck (or merge them - for now just the first one or a merged one)
+            // Let's create a merged deck for export
+            const mergedDeck = {
+                name: "Soltura Export",
+                cards: decks.flatMap(d => d.cards)
+            };
+
+            try {
+                loadingOverlay.classList.remove('hidden');
+                loadingText.textContent = 'Generating Anki Package...';
+                loadingDetail.textContent = 'Creating database and compressing files';
+
+                const blob = await manager.exportAPKG(mergedDeck);
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'Soltura_Export.apkg';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error('Export failed:', error);
+                alert('Failed to export deck. See console for details.');
+            } finally {
+                loadingOverlay.classList.add('hidden');
+            }
+        });
+    }
 
     // Tutor Panel Logic
     function toggleTutorPanel(show) {

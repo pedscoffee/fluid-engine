@@ -1,0 +1,6 @@
+#separator:tab
+#html:false
+Hola	Hi
+rojo	red
+verde	green
+el gato decidió a simplimente mirar	the gate decided to simply watch

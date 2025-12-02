@@ -78,6 +78,7 @@ export class AnkiDataManager {
      */
     async importAPKG(file) {
         try {
+            console.log('Starting APKG import for file:', file.name);
             // Load sql.js if not already loaded
             const SQL = await this.loadSqlJs();
 
@@ -91,6 +92,7 @@ export class AnkiDataManager {
             }
 
             const zip = await JSZip.loadAsync(arrayBuffer);
+            console.log('ZIP loaded, files:', Object.keys(zip.files));
 
             // Look for the collection database
             // Modern Anki uses collection.anki21 or collection.anki21b
@@ -99,8 +101,11 @@ export class AnkiDataManager {
                          zip.file('collection.anki2');
 
             if (!dbFile) {
+                console.error('Database file not found in ZIP. Available files:', Object.keys(zip.files));
                 throw new Error('No collection database found in APKG file');
             }
+
+            console.log('Database file found:', dbFile.name);
 
             // Extract the database
             const dbData = await dbFile.async('uint8array');
@@ -133,6 +138,280 @@ export class AnkiDataManager {
                 success: false,
                 error: error.message
             };
+        }
+    }
+
+    /**
+     * Export a deck to a valid Anki APKG file
+     * @param {Object} deck - The deck object to export
+     * @returns {Promise<Blob>} The generated .apkg file as a Blob
+     */
+    async exportAPKG(deck) {
+        try {
+            const SQL = await this.loadSqlJs();
+            const db = new SQL.Database();
+
+            // Create necessary tables
+            db.run(`
+                CREATE TABLE col (
+                    id integer primary key,
+                    crt integer not null,
+                    mod integer not null,
+                    scm integer not null,
+                    ver integer not null,
+                    dty integer not null,
+                    usn integer not null,
+                    ls integer not null,
+                    conf text not null,
+                    models text not null,
+                    decks text not null,
+                    dconf text not null,
+                    tags text not null
+                );
+                CREATE TABLE notes (
+                    id integer primary key,
+                    guid text not null,
+                    mid integer not null,
+                    mod integer not null,
+                    usn integer not null,
+                    tags text not null,
+                    flds text not null,
+                    sfld integer not null,
+                    csum integer not null,
+                    flags integer not null,
+                    data text not null
+                );
+                CREATE TABLE cards (
+                    id integer primary key,
+                    nid integer not null,
+                    did integer not null,
+                    ord integer not null,
+                    mod integer not null,
+                    usn integer not null,
+                    type integer not null,
+                    queue integer not null,
+                    due integer not null,
+                    ivl integer not null,
+                    factor integer not null,
+                    reps integer not null,
+                    lapses integer not null,
+                    left integer not null,
+                    odue integer not null,
+                    odid integer not null,
+                    flags integer not null,
+                    data text not null
+                );
+                CREATE TABLE revlog (
+                    id integer primary key,
+                    cid integer not null,
+                    usn integer not null,
+                    ease integer not null,
+                    ivl integer not null,
+                    lastIvl integer not null,
+                    factor integer not null,
+                    time integer not null,
+                    type integer not null
+                );
+                CREATE TABLE graves (
+                    usn integer not null,
+                    oid integer not null,
+                    type integer not null
+                );
+            `);
+
+            // Create a basic model (Note Type)
+            const modelId = 1700000000000;
+            const model = {
+                id: modelId,
+                name: "Basic (Soltura)",
+                type: 0,
+                mod: Date.now(),
+                usn: -1,
+                sortf: 0,
+                did: 1,
+                tmpls: [
+                    {
+                        name: "Card 1",
+                        ord: 0,
+                        qfmt: "{{Front}}",
+                        afmt: "{{FrontSide}}\n\n<hr id=answer>\n\n{{Back}}",
+                        bqfmt: "",
+                        bafmt: "",
+                        did: null
+                    }
+                ],
+                flds: [
+                    {
+                        name: "Front",
+                        ord: 0,
+                        sticky: false,
+                        rtl: false,
+                        font: "Arial",
+                        size: 20,
+                        media: []
+                    },
+                    {
+                        name: "Back",
+                        ord: 1,
+                        sticky: false,
+                        rtl: false,
+                        font: "Arial",
+                        size: 20,
+                        media: []
+                    }
+                ],
+                css: ".card { font-family: arial; font-size: 20px; text-align: center; color: black; background-color: white; }",
+                latexPre: "\\documentclass[12pt]{article}\n\\special{papersize=3in,5in}\n\\usepackage[utf8]{inputenc}\n\\usepackage{amssymb,amsmath}\n\\pagestyle{empty}\n\\setlength{\\parindent}{0in}\n\\begin{document}\n",
+                latexPost: "\\end{document}",
+                latexsvg: false,
+                req: [[0, "all", [0]]]
+            };
+
+            const models = {};
+            models[modelId] = model;
+
+            // Create a deck configuration
+            const deckConfId = 1;
+            const deckConf = {
+                id: deckConfId,
+                name: "Default",
+                autoplay: true,
+                replayq: true,
+                mod: Date.now(),
+                usn: -1,
+                maxTaken: 60,
+                new: {
+                    bury: false,
+                    delays: [1, 10],
+                    initialFactor: 2500,
+                    ints: [1, 4, 7],
+                    order: 1,
+                    perDay: 20
+                },
+                rev: {
+                    bury: false,
+                    ease4: 1.3,
+                    fuzz: 0.05,
+                    ivlFct: 1,
+                    maxIvl: 36500,
+                    minSpace: 1,
+                    perDay: 200
+                },
+                lapse: {
+                    delays: [10],
+                    leechAction: 0,
+                    leechFails: 8,
+                    minInt: 1,
+                    mult: 0
+                },
+                dyn: false
+            };
+            const dconf = {};
+            dconf[deckConfId] = deckConf;
+
+            // Create the deck
+            const deckId = 1;
+            const decks = {
+                "1": {
+                    id: 1,
+                    name: deck.name || "Soltura Deck",
+                    desc: "Exported from Soltura",
+                    mod: Date.now(),
+                    usn: -1,
+                    conf: 1,
+                    extendRev: 50,
+                    extendNew: 10,
+                    dyn: 0,
+                    collapsed: false,
+                    browserCollapsed: false
+                }
+            };
+
+            // Insert collection data
+            const now = Math.floor(Date.now() / 1000);
+            db.run(`INSERT INTO col VALUES (
+                1,
+                ${now},
+                ${now * 1000},
+                ${now * 1000},
+                11,
+                0,
+                0,
+                0,
+                '{}',
+                '${JSON.stringify(models)}',
+                '${JSON.stringify(decks)}',
+                '${JSON.stringify(dconf)}',
+                '{}'
+            )`);
+
+            // Insert cards and notes
+            const stmtNote = db.prepare("INSERT INTO notes VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            const stmtCard = db.prepare("INSERT INTO cards VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+            deck.cards.forEach((card, index) => {
+                const noteId = Date.now() + index * 100; // Ensure unique IDs
+                const cardId = noteId + 1;
+                const guid = Math.random().toString(36).substring(2, 10);
+                const fields = `${card.spanish}\x1f${card.english}`;
+
+                // Insert Note
+                stmtNote.run([
+                    noteId,
+                    guid,
+                    modelId,
+                    Math.floor(Date.now() / 1000),
+                    -1,
+                    "",
+                    fields,
+                    card.spanish, // sort field
+                    0, // csum
+                    0, // flags
+                    "" // data
+                ]);
+
+                // Insert Card
+                stmtCard.run([
+                    cardId,
+                    noteId,
+                    deckId,
+                    0, // ord
+                    Math.floor(Date.now() / 1000),
+                    -1,
+                    card.cardType || 0,
+                    0, // queue (new)
+                    card.interval || 0, // due
+                    card.interval || 0, // ivl
+                    card.easeFactor || 2500,
+                    0, // reps
+                    0, // lapses
+                    0, // left
+                    0, // odue
+                    0, // odid
+                    0, // flags
+                    "" // data
+                ]);
+            });
+
+            stmtNote.free();
+            stmtCard.free();
+
+            // Export database
+            const data = db.export();
+            db.close();
+
+            // Create ZIP
+            const JSZip = window.JSZip;
+            const zip = new JSZip();
+            zip.file("collection.anki2", data);
+            zip.file("media", "{}");
+
+            const content = await zip.generateAsync({ type: "blob" });
+            return content;
+
+        } catch (error) {
+            console.error('Error exporting APKG:', error);
+            throw error;
         }
     }
 

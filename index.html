@@ -77,6 +77,101 @@
             </div>
         </div>
 
+        <!-- Welcome Onboarding Overlay -->
+        <div id="welcome-overlay" class="modal hidden">
+            <div class="modal-content onboarding-modal">
+                <div class="onboarding-header">
+                    <img src="images/logo.png" alt="Soltura Logo" class="onboarding-logo">
+                    <h2>Welcome to Soltura!</h2>
+                    <p class="onboarding-subtitle">Your AI-powered Spanish conversation partner</p>
+                </div>
+
+                <div class="onboarding-steps">
+                    <div class="onboarding-step active" id="onboarding-step-1">
+                        <div class="step-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
+                            </svg>
+                        </div>
+                        <h3>Smart Adaptive Learning</h3>
+                        <p>Soltura automatically adjusts to your level. Just start talking, and we'll match your
+                            proficiency in real-time.</p>
+                        <div class="step-highlight">
+                            <strong>Tip:</strong> Select "Auto" mode for the best experience — it adapts as you speak!
+                        </div>
+                    </div>
+
+                    <div class="onboarding-step" id="onboarding-step-2">
+                        <div class="step-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                            </svg>
+                        </div>
+                        <h3>100% Private & Local</h3>
+                        <p>Everything runs in your browser. Your conversations never leave your device. No servers, no
+                            tracking, completely private.</p>
+                        <div class="step-highlight">
+                            <strong>First-time setup:</strong> The AI model will download once (~2GB). After that, it's
+                            instant!
+                        </div>
+                    </div>
+
+                    <div class="onboarding-step" id="onboarding-step-3">
+                        <div class="step-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z" />
+                            </svg>
+                        </div>
+                        <h3>Ready to Practice!</h3>
+                        <p>You can type <strong>or</strong> use push-to-talk. The tutor panel shows English translations
+                            and can answer any questions.</p>
+                        <div class="onboarding-options">
+                            <label class="onboarding-checkbox">
+                                <input type="checkbox" id="skip-onboarding-checkbox">
+                                <span>Don't show this again</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="onboarding-footer">
+                    <div class="step-dots">
+                        <span class="dot active" data-step="1"></span>
+                        <span class="dot" data-step="2"></span>
+                        <span class="dot" data-step="3"></span>
+                    </div>
+                    <div class="onboarding-actions">
+                        <button id="onboarding-skip" class="btn-text">Skip</button>
+                        <button id="onboarding-next" class="btn-primary">Next</button>
+                        <button id="onboarding-start" class="btn-primary hidden">Let's Go!</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PWA Install Banner -->
+        <div id="pwa-install-banner" class="pwa-banner hidden">
+            <div class="pwa-banner-content">
+                <div class="pwa-icon">
+                    <img src="images/icon.png" alt="Soltura Icon">
+                </div>
+                <div class="pwa-text">
+                    <strong>Install Soltura</strong>
+                    <p>Practice offline anytime. Install as an app!</p>
+                </div>
+                <div class="pwa-actions">
+                    <button id="pwa-install-btn" class="btn-primary btn-small">Install</button>
+                    <button id="pwa-dismiss-btn" class="btn-text btn-small">Not Now</button>
+                </div>
+            </div>
+        </div>
+
         <!-- Setup Screen -->
         <section id="setup-screen" class="screen active">
             <header class="hero-banner">

@@ -143,6 +143,12 @@ export function initUI() {
     }
     populateVoices();
 
+    // Initialize onboarding for first-time users
+    initOnboarding();
+
+    // Initialize PWA install prompt
+    initPWAInstall();
+
     // Check for saved session on load
     checkForSavedSession();
 
@@ -894,4 +900,141 @@ export function initUI() {
             loadingOverlay.classList.add('hidden');
         }
     }
+}
+
+// Onboarding Functions
+function initOnboarding() {
+    const welcomeOverlay = document.getElementById('welcome-overlay');
+    const skipOnboardingCheckbox = document.getElementById('skip-onboarding-checkbox');
+    const onboardingSkipBtn = document.getElementById('onboarding-skip');
+    const onboardingNextBtn = document.getElementById('onboarding-next');
+    const onboardingStartBtn = document.getElementById('onboarding-start');
+
+    let currentStep = 1;
+    const totalSteps = 3;
+
+    // Check if user has seen onboarding
+    const hasSeenOnboarding = localStorage.getItem('soltura_has_seen_onboarding');
+
+    if (!hasSeenOnboarding) {
+        // Show onboarding after a short delay
+        setTimeout(() => {
+            welcomeOverlay.classList.remove('hidden');
+        }, 500);
+    }
+
+    function updateStep(step) {
+        // Hide all steps
+        for (let i = 1; i <= totalSteps; i++) {
+            document.getElementById(`onboarding-step-${i}`)?.classList.remove('active');
+            document.querySelector(`.dot[data-step="${i}"]`)?.classList.remove('active');
+        }
+
+        // Show current step
+        document.getElementById(`onboarding-step-${step}`)?.classList.add('active');
+        document.querySelector(`.dot[data-step="${step}"]`)?.classList.add('active');
+
+        // Update buttons
+        if (step === totalSteps) {
+            onboardingNextBtn.classList.add('hidden');
+            onboardingStartBtn.classList.remove('hidden');
+        } else {
+            onboardingNextBtn.classList.remove('hidden');
+            onboardingStartBtn.classList.add('hidden');
+        }
+    }
+
+    // Next button
+    onboardingNextBtn.addEventListener('click', () => {
+        if (currentStep < totalSteps) {
+            currentStep++;
+            updateStep(currentStep);
+        }
+    });
+
+    // Dot navigation
+    document.querySelectorAll('.dot').forEach(dot => {
+        dot.addEventListener('click', () => {
+            const step = parseInt(dot.dataset.step);
+            currentStep = step;
+            updateStep(step);
+        });
+    });
+
+    // Skip button
+    onboardingSkipBtn.addEventListener('click', closeOnboarding);
+
+    // Start button
+    onboardingStartBtn.addEventListener('click', closeOnboarding);
+
+    function closeOnboarding() {
+        // Save preference if checkbox is checked
+        if (skipOnboardingCheckbox.checked) {
+            localStorage.setItem('soltura_has_seen_onboarding', 'true');
+        }
+
+        welcomeOverlay.classList.add('hidden');
+    }
+}
+
+// PWA Install Functions
+function initPWAInstall() {
+    const pwaBanner = document.getElementById('pwa-install-banner');
+    const pwaInstallBtn = document.getElementById('pwa-install-btn');
+    const pwaDismissBtn = document.getElementById('pwa-dismiss-btn');
+
+    let deferredPrompt = null;
+    const hasDismissed = localStorage.getItem('soltura_pwa_dismissed');
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+    // Listen for the beforeinstallprompt event
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Prevent the mini-infobar from appearing on mobile
+        e.preventDefault();
+
+        // Stash the event so it can be triggered later
+        deferredPrompt = e;
+
+        // Don't show if already installed or user dismissed
+        if (!isStandalone && !hasDismissed) {
+            // Show the banner after a delay (5 seconds)
+            setTimeout(() => {
+                pwaBanner.classList.remove('hidden');
+            }, 5000);
+        }
+    });
+
+    // Install button handler
+    pwaInstallBtn.addEventListener('click', async () => {
+        if (!deferredPrompt) {
+            return;
+        }
+
+        // Show the install prompt
+        deferredPrompt.prompt();
+
+        // Wait for the user to respond to the prompt
+        const { outcome } = await deferredPrompt.userChoice;
+
+        console.log(`User response to the install prompt: ${outcome}`);
+
+        // We've used the prompt, and can't use it again; throw it away
+        deferredPrompt = null;
+
+        // Hide the banner
+        pwaBanner.classList.add('hidden');
+    });
+
+    // Dismiss button handler
+    pwaDismissBtn.addEventListener('click', () => {
+        pwaBanner.classList.add('hidden');
+        localStorage.setItem('soltura_pwa_dismissed', 'true');
+    });
+
+    // Listen for successful install
+    window.addEventListener('appinstalled', () => {
+        console.log('PWA was installed');
+        pwaBanner.classList.add('hidden');
+        deferredPrompt = null;
+    });
 }

@@ -1405,3 +1405,245 @@ input:checked+.slider:before {
         width: 100%;
     }
 }
+
+/* Onboarding Styles */
+.onboarding-modal {
+    max-width: 600px;
+    text-align: center;
+    padding: var(--spacing-xl);
+}
+
+.onboarding-header {
+    margin-bottom: var(--spacing-xl);
+}
+
+.onboarding-logo {
+    max-width: 300px;
+    height: auto;
+    margin-bottom: var(--spacing-md);
+}
+
+.onboarding-subtitle {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    margin-top: var(--spacing-sm);
+}
+
+.onboarding-steps {
+    position: relative;
+    min-height: 280px;
+    margin: var(--spacing-xl) 0;
+}
+
+.onboarding-step {
+    display: none;
+    animation: fadeInSlide 0.4s ease;
+}
+
+.onboarding-step.active {
+    display: block;
+}
+
+@keyframes fadeInSlide {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.step-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto var(--spacing-md);
+    color: var(--primary);
+}
+
+.step-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.onboarding-step h3 {
+    color: var(--primary);
+    margin-bottom: var(--spacing-md);
+    font-size: 1.5rem;
+}
+
+.onboarding-step p {
+    color: var(--text);
+    line-height: 1.6;
+    margin-bottom: var(--spacing-md);
+    font-size: 1rem;
+}
+
+.step-highlight {
+    background: var(--primary-light);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    margin-top: var(--spacing-lg);
+    text-align: left;
+}
+
+.step-highlight strong {
+    color: var(--primary);
+}
+
+.onboarding-options {
+    margin-top: var(--spacing-lg);
+    display: flex;
+    justify-content: center;
+}
+
+.onboarding-checkbox {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    cursor: pointer;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.onboarding-checkbox input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.onboarding-footer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    align-items: center;
+}
+
+.step-dots {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--surface-light);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.dot.active {
+    background: var(--primary);
+    width: 28px;
+    border-radius: var(--radius-full);
+}
+
+.onboarding-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    align-items: center;
+}
+
+/* PWA Install Banner */
+.pwa-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    border-top: 2px solid var(--primary);
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 50;
+    animation: slideUp 0.4s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+.pwa-banner-content {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-lg);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.pwa-icon {
+    flex-shrink: 0;
+}
+
+.pwa-icon img {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+}
+
+.pwa-text {
+    flex: 1;
+    text-align: left;
+}
+
+.pwa-text strong {
+    display: block;
+    color: var(--text);
+    font-size: 1rem;
+    margin-bottom: 2px;
+}
+
+.pwa-text p {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.pwa-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+    .onboarding-modal {
+        padding: var(--spacing-lg);
+    }
+
+    .onboarding-logo {
+        max-width: 200px;
+    }
+
+    .step-icon {
+        width: 60px;
+        height: 60px;
+    }
+
+    .onboarding-step h3 {
+        font-size: 1.25rem;
+    }
+
+    .pwa-banner-content {
+        flex-wrap: wrap;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .pwa-text {
+        flex: 1 1 100%;
+        text-align: center;
+    }
+
+    .pwa-actions {
+        flex: 1 1 100%;
+        justify-content: center;
+    }
+}

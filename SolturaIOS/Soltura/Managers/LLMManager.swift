@@ -19,15 +19,36 @@ class LLMManager: ObservableObject {
 
     func initialize(progressCallback: @escaping (Float, String) -> Void) async throws {
         // In a production app, this would:
-        // 1. Load a quantized LLM model (e.g., Llama 3.2 1B or 3B quantized to 4-bit)
+        // 1. Load the downloaded model from ModelManager
         // 2. Initialize llama.cpp or Apple's ML framework
         // 3. Warm up the model
 
+        // Get model path from ModelManager
+        let modelManager = ModelManager.shared
+        guard let modelSize = modelManager.currentModel else {
+            throw NSError(domain: "LLM", code: 1, userInfo: [
+                NSLocalizedDescriptionKey: "No model downloaded. Please download a model first."
+            ])
+        }
+
+        let modelPath = modelManager.getModelPath(for: modelSize)
+        guard FileManager.default.fileExists(atPath: modelPath.path) else {
+            throw NSError(domain: "LLM", code: 2, userInfo: [
+                NSLocalizedDescriptionKey: "Model file not found at \(modelPath.path)"
+            ])
+        }
+
+        print("Loading model from: \(modelPath.path)")
+
         // For this implementation, we'll simulate the process
-        // In production, you would integrate:
-        // - llama.cpp Swift bindings
-        // - Or Apple's Core ML with a converted model
-        // - Or MLX Swift for Apple Silicon optimization
+        // In production, you would:
+        // 1. Initialize llama.cpp with the downloaded model:
+        //    var modelParams = llama_model_default_params()
+        //    modelParams.n_gpu_layers = 99 // Use Metal GPU
+        //    model = llama_load_model_from_file(modelPath.path, modelParams)
+        //
+        // 2. Or use MLX Swift for Apple Silicon optimization
+        // 3. Or convert to Core ML format
 
         await MainActor.run {
             initializationMessage = "Loading model weights..."

@@ -7,9 +7,12 @@
 
 A native iOS application for practicing conversational Spanish with AI, featuring on-device language models, speech recognition, and Anki spaced repetition integration.
 
+**🎉 NEW:** On-demand model download! Users choose and download the AI model on first launch (700MB or 2GB), drastically reducing initial app size.
+
 ## Features
 
 ### 🗣️ AI Conversation Practice
+- **On-Demand Model Download**: Choose between compact (700MB) or quality (2GB) models on first launch
 - **Adaptive Difficulty**: Automatically adjusts to your proficiency level (A1-C2, Native)
 - **On-Device LLM**: Private, fast Spanish conversation with local AI models
 - **Natural Conversation Flow**: 1-3 sentence responses that encourage dialogue
@@ -35,7 +38,10 @@ A native iOS application for practicing conversational Spanish with AI, featurin
 
 - **iOS**: 17.0 or later
 - **Devices**: iPhone 13 or later recommended (for on-device LLM)
-- **Storage**: 2-3 GB for LLM model (first launch)
+- **Storage**:
+  - App: ~50MB initial download
+  - AI Model: 700MB (compact) or 2GB (quality) - downloaded on first launch
+  - Total: 750MB - 2.1GB after setup
 - **Permissions**: Microphone, Speech Recognition
 
 ## Installation & Setup
@@ -46,9 +52,23 @@ A native iOS application for practicing conversational Spanish with AI, featurin
 2. Open `Soltura.xcodeproj` in Xcode 15+
 3. Select your development team in Signing & Capabilities
 
-### Step 2: Integrate an On-Device LLM
+### Step 2: Model Download System (Already Implemented!)
 
-The app is designed to use on-device language models for privacy and speed. You have several options:
+The app now includes a **complete on-demand model download system**:
+
+- ✅ Beautiful model selection UI on first launch
+- ✅ Download progress with speed and ETA
+- ✅ Storage validation and WiFi checks
+- ✅ Automatic model management
+- ✅ Device-specific recommendations
+
+**Users choose and download their preferred model (1B or 3B) on first launch!**
+
+See [MODEL_DOWNLOAD.md](MODEL_DOWNLOAD.md) for complete documentation.
+
+### Step 3: Integrate an On-Device LLM
+
+The download system is complete. Now integrate the actual LLM inference. You have several options:
 
 #### Option A: Using llama.cpp (Recommended)
 

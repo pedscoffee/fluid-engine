@@ -4,6 +4,7 @@ import { getConversationManager, initConversation } from './conversation.js';
 import { getSpeechService } from './speech.js';
 import { scenarios } from './scenarios.js';
 import { initTutor, getTutorManager } from './tutor.js';
+import { initStatsManager, getStatsManager } from './statsManager.js';
 
 // Lazy load Anki module only when needed
 let ankiDataManager = null;
@@ -149,6 +150,9 @@ export function initUI() {
     // Initialize PWA install prompt
     initPWAInstall();
 
+    // Initialize stats tracking
+    initStatsManager();
+
     // Check for saved session on load
     checkForSavedSession();
 
@@ -221,6 +225,10 @@ export function initUI() {
             // 4. Start Conversation
             conversationManager.startConversation(newPrefs);
 
+            // Start stats session
+            const statsManager = getStatsManager();
+            statsManager.startSession(newPrefs);
+
             // 5. Generate Greeting
             // We'll ask the LLM to generate the first message based on the prompt
             loadingText.textContent = "Starting conversation...";
@@ -258,6 +266,13 @@ export function initUI() {
         conversationScreen.classList.add('hidden');
         setupScreen.classList.remove('hidden');
         setupScreen.classList.add('active');
+
+        // End stats session
+        const statsManager = getStatsManager();
+        if (statsManager.isSessionActive()) {
+            statsManager.endSession();
+        }
+
         // Ideally we should reset conversation state here
     });
 
@@ -339,6 +354,45 @@ export function initUI() {
             // Restart with current preferences
             const currentPrefs = preferences.get();
             conversationManager.startConversation(currentPrefs);
+        }
+    });
+
+    // Stats Dashboard Handlers
+    const statsBtn = document.getElementById('stats-btn');
+    const statsModal = document.getElementById('stats-modal');
+    const closeStatsBtn = document.getElementById('close-stats-btn');
+    const exportStatsBtn = document.getElementById('export-stats-btn');
+    const clearStatsBtn = document.getElementById('clear-stats-btn');
+
+    statsBtn.addEventListener('click', () => {
+        const statsManager = getStatsManager();
+        const summary = statsManager.getStatsSummary();
+        updateStatsDashboard(summary);
+        statsModal.classList.remove('hidden');
+    });
+
+    closeStatsBtn.addEventListener('click', () => {
+        statsModal.classList.add('hidden');
+    });
+
+    exportStatsBtn.addEventListener('click', () => {
+        const statsManager = getStatsManager();
+        statsManager.exportData();
+    });
+
+    clearStatsBtn.addEventListener('click', async () => {
+        if (confirm('Are you sure you want to clear all progress data? This cannot be undone.')) {
+            const statsManager = getStatsManager();
+            await statsManager.clearAllStats();
+            updateStatsDashboard(statsManager.getStatsSummary());
+        }
+    });
+
+    // Save session on close
+    window.addEventListener('beforeunload', () => {
+        const statsManager = getStatsManager();
+        if (statsManager.isSessionActive()) {
+            statsManager.endSession();
         }
     });
 
@@ -782,6 +836,10 @@ export function initUI() {
     async function handleUserMessage(text) {
         addMessage(text, 'user');
 
+        // Track user message
+        const statsManager = getStatsManager();
+        statsManager.trackMessage('user', text);
+
         // Show typing indicator
         const typingIndicator = document.createElement('div');
         typingIndicator.className = 'message system typing-indicator';
@@ -797,6 +855,9 @@ export function initUI() {
 
         // Pass 1: Display Spanish immediately
         addMessage(responseObj.spanish, 'system');
+
+        // Track AI message
+        statsManager.trackMessage('ai', responseObj.spanish);
 
         // Save conversation
         conversationManager.saveToStorage();
@@ -1037,4 +1098,73 @@ function initPWAInstall() {
         pwaBanner.classList.add('hidden');
         deferredPrompt = null;
     });
+}
+
+// Stats Dashboard Helper Functions
+function updateStatsDashboard(summary) {
+    // Update summary cards
+    document.getElementById('total-sessions').textContent = summary.totalSessions;
+    document.getElementById('total-time').textContent = formatDuration(summary.totalMinutes);
+    document.getElementById('total-messages').textContent = summary.totalMessages;
+    document.getElementById('current-streak').textContent = summary.currentStreak;
+
+    // Update progress items
+    document.getElementById('unique-vocab-count').textContent = `${summary.uniqueVocabCount} words`;
+    document.getElementById('longest-streak').textContent = `${summary.longestStreak} days`;
+
+    const grammarList = summary.grammarPracticed.length > 0
+        ? summary.grammarPracticed.join(', ')
+        : 'None yet';
+    document.getElementById('grammar-practiced').textContent = grammarList;
+
+    const difficultyList = summary.difficultiesUsed.length > 0
+        ? summary.difficultiesUsed.join(', ')
+        : '—';
+    document.getElementById('difficulties-used').textContent = difficultyList;
+
+    // Render chart
+    renderActivityChart(summary.last7Days);
+}
+
+function renderActivityChart(daysData) {
+    const chartContainer = document.getElementById('activity-chart');
+    chartContainer.innerHTML = '';
+
+    // Find max minutes for scaling
+    const maxMinutes = Math.max(...daysData.map(d => d.minutes), 10); // Min 10 mins for scale
+
+    daysData.forEach(day => {
+        const column = document.createElement('div');
+        column.className = 'chart-column';
+
+        // Calculate height percentage (max 100%)
+        const heightPercent = Math.min((day.minutes / maxMinutes) * 100, 100);
+
+        // Create bar
+        const bar = document.createElement('div');
+        bar.className = 'chart-bar';
+        bar.style.height = `${heightPercent}%`;
+
+        // Tooltip data
+        const tooltipText = `${day.minutes} min (${day.sessionCount} sessions)`;
+        bar.setAttribute('data-tooltip', tooltipText);
+
+        // Label (Day name)
+        const label = document.createElement('div');
+        label.className = 'chart-label';
+        label.textContent = day.dayName;
+
+        column.appendChild(bar);
+        column.appendChild(label);
+        chartContainer.appendChild(column);
+    });
+}
+
+function formatDuration(minutes) {
+    if (minutes < 60) {
+        return `${minutes} min`;
+    }
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours}h ${mins}m`;
 }

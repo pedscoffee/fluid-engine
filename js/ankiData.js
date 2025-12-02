@@ -609,9 +609,10 @@ export class AnkiDataManager {
         // Remove punctuation and split into words
         const words = text
             .toLowerCase()
-            .replace(/[¿?!¡.,;:()"\[\]]/g, ' ')
+            .replace(/[¿?!¡.,;:()"\[\]{}<>]/g, ' ') // Added {}<> to remove potential HTML/template artifacts
             .split(/\s+/)
-            .filter(word => word.length > 2);  // Filter short words
+            .filter(word => word.length > 2)   // Filter short words
+            .filter(word => !/\d/.test(word)); // Filter words with numbers
 
         // Common Spanish function words to exclude
         const excludeWords = new Set([
@@ -619,10 +620,28 @@ export class AnkiDataManager {
             'de', 'del', 'al', 'en', 'con', 'por', 'para', 'sin',
             'que', 'qué', 'como', 'cómo', 'donde', 'dónde',
             'es', 'son', 'está', 'están', 'ser', 'estar',
-            'hay', 'muy', 'más', 'menos', 'tan', 'tanto'
+            'hay', 'muy', 'más', 'menos', 'tan', 'tanto',
+            'y', 'o', 'pero', 'si', 'no', 'ni', 'porque'
         ]);
 
-        return words.filter(word => !excludeWords.has(word));
+        // Specific garbage and technical artifacts to exclude
+        // We avoid broad English stop words to prevent filtering valid Spanish words (e.g., 'no', 'me', 'a', 'en')
+        const garbageWords = new Set([
+            // Technical/Anki artifacts
+            'anki', 'apkg', 'colpkg', 'html', 'css', 'div', 'span', 'class', 'style', 'src', 'href',
+            'http', 'https', 'com', 'org', 'net', 'www', 'br', 'img', 'width', 'height',
+            // Specific garbage text reported by user
+            'please', 'update', 'latest', 'file', 'again', 'should', 'keep', 'fine', 'tuning',
+            'transition', 'text', 'import', 'support', 'actual', 'files', 'settle', 'okay',
+            // Clearly English function words that are NOT Spanish words
+            'the', 'and', 'that', 'have', 'with', 'this', 'from', 'they', 'would', 'there',
+            'their', 'what', 'about', 'which', 'when', 'make', 'like', 'time', 'just', 'know',
+            'take', 'people', 'year', 'good', 'some', 'could', 'them', 'other', 'than', 'then',
+            'look', 'only', 'come', 'over', 'think', 'also', 'back', 'after', 'work', 'well',
+            'even', 'want', 'because', 'any', 'these', 'give', 'day', 'most'
+        ]);
+
+        return words.filter(word => !excludeWords.has(word) && !garbageWords.has(word));
     }
 
     /**

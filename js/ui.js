@@ -1,6 +1,6 @@
 import { UserPreferences } from './preferences.js';
 import { SpanishTutorPromptBuilder } from './promptBuilder.js';
-import { getConversationManager } from './conversation.js';
+import { getConversationManager, initConversation } from './conversation.js';
 import { getSpeechService } from './speech.js';
 import { scenarios } from './scenarios.js';
 import { initTutor, getTutorManager } from './tutor.js';

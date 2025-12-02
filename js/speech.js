@@ -172,7 +172,14 @@ export class SpeechService {
             }
 
             utterance.onend = () => resolve();
-            utterance.onerror = (e) => reject(e);
+            utterance.onerror = (e) => {
+                if (e.error === 'interrupted') {
+                    // This is expected when we cancel speech to start a new one
+                    resolve();
+                } else {
+                    reject(e);
+                }
+            };
 
             window.speechSynthesis.speak(utterance);
         });

@@ -95,14 +95,18 @@ export class AnkiDataManager {
             console.log('ZIP loaded, files:', Object.keys(zip.files));
 
             // Look for the collection database
-            // Modern Anki uses collection.anki21 or collection.anki21b
-            let dbFile = zip.file('collection.anki21b') ||
-                         zip.file('collection.anki21') ||
-                         zip.file('collection.anki2');
+            // Prioritize collection.anki2 (standard SQLite) over newer compressed formats
+            let dbFile = zip.file('collection.anki2') ||
+                zip.file('collection.anki21');
+
+            // Check for compressed format if no standard DB found
+            if (!dbFile && zip.file('collection.anki21b')) {
+                throw new Error('This Anki package uses a compressed database (collection.anki21b) which is not currently supported. Please export your deck from Anki with "Support older Anki versions" checked, or use a standard .apkg file.');
+            }
 
             if (!dbFile) {
                 console.error('Database file not found in ZIP. Available files:', Object.keys(zip.files));
-                throw new Error('No collection database found in APKG file');
+                throw new Error('No valid collection database (collection.anki2) found in APKG file');
             }
 
             console.log('Database file found:', dbFile.name);
@@ -532,7 +536,7 @@ export class AnkiDataManager {
                 if (spanish) {
                     // Assign interval based on manual mastery level
                     let interval = 0;
-                    switch(masteryLevel) {
+                    switch (masteryLevel) {
                         case 'mastered': interval = 180; break;  // 6 months
                         case 'familiar': interval = 45; break;   // 1.5 months
                         case 'learning': interval = 14; break;   // 2 weeks

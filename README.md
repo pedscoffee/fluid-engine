@@ -7,6 +7,8 @@ Practice Spanish naturally with an AI tutor that runs entirely in your browser. 
 ![WebGPU](https://img.shields.io/badge/WebGPU-required-green.svg)
 ![Browser](https://img.shields.io/badge/browser-Chrome%20113%2B-orange.svg)
 
+https://pedscoffee.github.io/fluid-engine/
+
 ## ✨ Features
 
 ### 🔒 **100% Private & Local**

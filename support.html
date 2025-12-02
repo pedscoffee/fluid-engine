@@ -12,9 +12,16 @@
     <style>
         .share-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: var(--spacing-md);
             margin: var(--spacing-xl) 0;
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .share-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
         .share-btn {
@@ -30,6 +37,7 @@
             color: var(--text);
             transition: all 0.2s ease;
             gap: var(--spacing-sm);
+            text-align: center;
         }
 
         .share-btn:hover {
@@ -71,52 +79,97 @@
                 </div>
             </header>
 
-            <div class="container" style="max-width: 800px;">
-                <a href="index.html" class="back-link">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            <div class="container"
+                style="max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; align-items: center;">
+                <a href="index.html" class="back-link" style="align-self: flex-start;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 12H5M12 19l-7-7 7-7" />
+                    </svg>
                     Back to App
                 </a>
 
-                <div class="setup-form">
+                <div class="setup-form"
+                    style="width: 100%; display: flex; flex-direction: column; align-items: center;">
                     <div style="text-align: center;">
                         <h2>Support the Project</h2>
                         <p class="hint" style="font-size: 1rem; margin-top: var(--spacing-md);">
-                            The best way to support Soltura is to share it with friends, students, and language learners.
+                            The best way to support Soltura is to share it with friends, students, and language
+                            learners.
                         </p>
                     </div>
 
                     <div class="share-grid">
                         <!-- X / Twitter -->
-                        <a href="https://twitter.com/intent/tweet?text=Check%20out%20Soltura%2C%20an%20amazing%20free%20AI%20tutor%20for%20practicing%20Spanish%20naturally!%20%23LanguageLearning%20%23Spanish&url=https%3A%2F%2Fsoltura.app" target="_blank" class="share-btn">
-                            <svg class="share-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l11.733 16h4.267l-11.733 -16z"/><path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772"/></svg>
+                        <a href="https://twitter.com/intent/tweet?text=Check%20out%20Soltura%2C%20an%20amazing%20free%20AI%20tutor%20for%20practicing%20Spanish%20naturally!%20%23LanguageLearning%20%23Spanish&url=https%3A%2F%2Fsoltura.app"
+                            target="_blank" class="share-btn">
+                            <svg class="share-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 4l11.733 16h4.267l-11.733 -16z" />
+                                <path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" />
+                            </svg>
                             <span>Share on X</span>
                         </a>
 
                         <!-- Facebook -->
-                        <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fsoltura.app" target="_blank" class="share-btn">
-                            <svg class="share-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fsoltura.app" target="_blank"
+                            class="share-btn">
+                            <svg class="share-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                            </svg>
                             <span>Share on Facebook</span>
                         </a>
 
                         <!-- LinkedIn -->
-                        <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fsoltura.app" target="_blank" class="share-btn">
-                            <svg class="share-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                        <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fsoltura.app"
+                            target="_blank" class="share-btn">
+                            <svg class="share-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path
+                                    d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z">
+                                </path>
+                                <rect x="2" y="9" width="4" height="12"></rect>
+                                <circle cx="4" cy="4" r="2"></circle>
+                            </svg>
                             <span>Share on LinkedIn</span>
                         </a>
 
                         <!-- Email -->
-                        <a href="mailto:?subject=Check%20out%20Soltura%20-%20AI%20Spanish%20Tutor&body=Hey%2C%0A%0AI%20found%20this%20great%20free%20tool%20for%20practicing%20Spanish%20conversation%20with%20AI.%20It's%20called%20Soltura%3A%0A%0Ahttps%3A%2F%2Fsoltura.app" class="share-btn">
-                            <svg class="share-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                        <a href="mailto:?subject=Check%20out%20Soltura%20-%20AI%20Spanish%20Tutor&body=Hey%2C%0A%0AI%20found%20this%20great%20free%20tool%20for%20practicing%20Spanish%20conversation%20with%20AI.%20It's%20called%20Soltura%3A%0A%0Ahttps%3A%2F%2Fsoltura.app"
+                            class="share-btn">
+                            <svg class="share-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                                </path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
                             <span>Email a Friend</span>
                         </a>
                     </div>
 
-                    <div style="text-align: center; margin-top: var(--spacing-xl);">
-                        <p class="hint">Thank you for helping us grow!</p>
+                    <div style="text-align: center; margin-top: var(--spacing-xl); max-width: 600px;">
+                        <h3>Value for Value</h3>
+                        <p class="hint" style="margin-top: var(--spacing-sm);">
+                            If this tool has been helpful to you, consider supporting the project. Your support helps
+                            keep Soltura ad-free. Thank you!
+                        </p>
+                    </div>
+
+                    <div style="margin-top: var(--spacing-lg); text-align: center;">
+                        <script async src="https://js.stripe.com/v3/buy-button.js"></script>
+                        <stripe-buy-button buy-button-id="buy_btn_1SZsU17Uvbzj9s15pm6ri4a8"
+                            publishable-key="pk_live_51SNUyr7Uvbzj9s15RUuLxFZ59ZIV0Mlh9sZSz01SpTxbvAgHyUmPDYSKWxLfi352CPXoaG2ztf1FE349LaMp18Wj00Saf0EVjo">
+                        </stripe-buy-button>
                     </div>
                 </div>
             </div>
         </section>
     </div>
 </body>
+
 </html>

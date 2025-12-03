@@ -1,7 +1,7 @@
 {
-    "name": "Soltura",
-    "short_name": "Soltura",
-    "description": "Conversational Spanish Practice - Practice Spanish naturally with AI",
+    "name": "Contextura",
+    "short_name": "Contextura",
+    "description": "Dual-Context AI Chat - Customizable conversations with separate main and commentary threads",
     "start_url": "./",
     "scope": "./",
     "display": "standalone",

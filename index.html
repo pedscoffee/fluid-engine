@@ -8,26 +8,26 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#2D6A6A">
     <meta name="description"
-        content="Practice Spanish naturally with AI-powered conversational practice. Free, browser-based Spanish tutor with voice recognition and personalized feedback.">
+        content="Dual-context AI chat with customizable templates. Maintain clean conversation threads with separate main and commentary contexts.">
     <meta name="keywords"
-        content="Spanish practice, learn Spanish, AI tutor, conversational Spanish, Spanish speaking practice, language learning">
-    <meta name="author" content="Soltura">
+        content="AI chat, dual context, conversational AI, customizable chat, LLM, WebGPU, local AI">
+    <meta name="author" content="Contextura">
 
     <!-- Open Graph / Social Media -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Soltura - AI-Powered Conversational Spanish Practice">
+    <meta property="og:title" content="Contextura - Dual-Context AI Chat">
     <meta property="og:description"
-        content="Practice Spanish naturally with AI. Free, browser-based conversational practice with voice recognition and personalized feedback.">
+        content="Customizable dual-context conversations powered by local AI. Keep side discussions separate from your main thread.">
     <meta property="og:url" content="https://yoursite.com">
     <meta property="og:image" content="https://yoursite.com/assets/og-image.png">
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Soltura - AI-Powered Conversational Spanish Practice">
+    <meta name="twitter:title" content="Contextura - Dual-Context AI Chat">
     <meta name="twitter:description"
-        content="Practice Spanish naturally with AI. Free, browser-based conversational practice with voice recognition.">
+        content="Customizable dual-context conversations powered by local AI. Keep side discussions separate from your main thread.">
 
-    <title>Soltura - Conversational Spanish Practice</title>
+    <title>Contextura - Dual-Context AI Chat</title>
     <link rel="icon" type="image/x-icon" href="images/favicon.ico">
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="css/styles.css">
@@ -58,9 +58,6 @@
     }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <!-- Libraries for Anki APKG parsing -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
 </head>
 
 <body>
@@ -81,9 +78,9 @@
         <div id="welcome-overlay" class="modal hidden">
             <div class="modal-content onboarding-modal">
                 <div class="onboarding-header">
-                    <img src="images/logo.png" alt="Soltura Logo" class="onboarding-logo">
-                    <h2>Welcome to Soltura!</h2>
-                    <p class="onboarding-subtitle">Your AI-powered Spanish conversation partner</p>
+                    <img src="images/logo.png" alt="Contextura Logo" class="onboarding-logo">
+                    <h2>Welcome to Contextura!</h2>
+                    <p class="onboarding-subtitle">Dual-context conversations powered by local AI</p>
                 </div>
 
                 <div class="onboarding-steps">
@@ -95,11 +92,11 @@
                                     d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
                             </svg>
                         </div>
-                        <h3>Smart Adaptive Learning</h3>
-                        <p>Soltura automatically adjusts to your level. Just start talking, and we'll match your
-                            proficiency in real-time.</p>
+                        <h3>Dual-Context Conversations</h3>
+                        <p>Contextura maintains two separate conversation threads: your main chat and a side panel for
+                            questions, analysis, or commentary that won't pollute your primary conversation.</p>
                         <div class="step-highlight">
-                            <strong>Tip:</strong> Select "Auto" mode for the best experience — it adapts as you speak!
+                            <strong>Tip:</strong> Use templates to quickly set up different conversation styles!
                         </div>
                     </div>
 
@@ -115,8 +112,8 @@
                         <p>Everything runs in your browser. Your conversations never leave your device. No servers, no
                             tracking, completely private.</p>
                         <div class="step-highlight">
-                            <strong>First-time setup:</strong> The AI model will download once (~2GB). After that, it's
-                            instant!
+                            <strong>First-time setup:</strong> The AI model downloads once (~2GB). After that, everything is
+                            instant and offline!
                         </div>
                     </div>
 
@@ -128,9 +125,9 @@
                                     d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z" />
                             </svg>
                         </div>
-                        <h3>Ready to Practice!</h3>
-                        <p>You can type <strong>or</strong> use push-to-talk. The tutor panel shows English translations
-                            and can answer any questions.</p>
+                        <h3>Ready to Chat!</h3>
+                        <p>You can type <strong>or</strong> use push-to-talk. The side panel provides context-aware
+                            commentary without disrupting your main conversation.</p>
                         <div class="onboarding-options">
                             <label class="onboarding-checkbox">
                                 <input type="checkbox" id="skip-onboarding-checkbox">
@@ -159,11 +156,11 @@
         <div id="pwa-install-banner" class="pwa-banner hidden">
             <div class="pwa-banner-content">
                 <div class="pwa-icon">
-                    <img src="images/icon.png" alt="Soltura Icon">
+                    <img src="images/icon.png" alt="Contextura Icon">
                 </div>
                 <div class="pwa-text">
-                    <strong>Install Soltura</strong>
-                    <p>Practice offline anytime. Install as an app!</p>
+                    <strong>Install Contextura</strong>
+                    <p>Chat offline anytime. Install as an app!</p>
                 </div>
                 <div class="pwa-actions">
                     <button id="pwa-install-btn" class="btn-primary btn-small">Install</button>
@@ -176,272 +173,34 @@
         <section id="setup-screen" class="screen active">
             <header class="hero-banner">
                 <div class="hero-content">
-                    <img src="images/logo.png" alt="Soltura Logo" class="logo">
-                    <p class="phonetic">(sohl-too-rah) (f) - fluency, ease</p>
-                    <p class="subtitle">Practice Spanish naturally. Just say what you want.</p>
+                    <img src="images/logo.png" alt="Contextura Logo" class="logo">
+                    <p class="phonetic">(con-tex-tur-a) - woven together</p>
+                    <p class="subtitle">Dual-context conversations. Keep your threads separate.</p>
                 </div>
             </header>
 
             <div class="container">
 
                 <div class="setup-form">
-                    <!-- Mode Selection -->
-                    <!-- Difficulty Level Selection -->
+                    <!-- Template Selection -->
                     <div class="form-group">
-                        <label>Proficiency Level</label>
-                        <div class="grammar-grid">
-                            <label class="checkbox-item checkbox-item-auto">
-                                <input type="radio" name="difficulty" value="Auto" checked> Auto
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="radio" name="difficulty" value="A1"> A1 - Beginner
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="radio" name="difficulty" value="A2"> A2 - Elementary
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="radio" name="difficulty" value="B1"> B1 - Intermediate
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="radio" name="difficulty" value="B2"> B2 - Upper Int.
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="radio" name="difficulty" value="C1"> C1 - Advanced
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="radio" name="difficulty" value="C2"> C2 - Proficient
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="radio" name="difficulty" value="Native"> Native
-                            </label>
-                        </div>
-                        <p class="hint">Auto adapts to your level. Select a specific level for consistent difficulty.
-                            Native has no constraints.</p>
-                    </div>
-
-                    <!-- Shared Vocabulary Input (Available in all modes) -->
-                    <div class="form-group large-input">
-                        <label for="vocab-list">Target Vocabulary (Optional)</label>
-                        <div class="input-with-action">
-                            <textarea id="vocab-list"
-                                placeholder="Enter words or phrases you want to practice, separated by commas. e.g., 'gato, perro, la casa'"></textarea>
-                            <div class="action-buttons">
-                                <input type="file" id="csv-upload" accept=".csv" class="hidden">
-                                <button id="import-csv-btn" class="btn-secondary btn-small" type="button">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                                        <polyline points="7 10 12 15 17 10" />
-                                        <line x1="12" y1="15" x2="12" y2="3" />
-                                    </svg>
-                                    Import CSV
-                                </button>
-                            </div>
-                        </div>
-                        <p class="hint">The AI will prioritize using these words in the conversation.</p>
-                    </div>
-
-                    <!-- Anki Integration Section -->
-                    <div class="form-group anki-section">
-                        <label>Anki Spaced Repetition Integration</label>
-                        <div class="anki-import-area">
-                            <div class="anki-info">
-                                <p class="hint">Import your Anki decks to personalize conversations based on your
-                                    vocabulary mastery. The AI will use words you know well to scaffold learning of
-                                    newer vocabulary.</p>
-                            </div>
-                            <div class="anki-import-buttons">
-                                <input type="file" id="anki-apkg-upload" accept=".apkg" class="hidden">
-                                <input type="file" id="anki-tsv-upload" accept=".txt,.tsv,.csv" class="hidden">
-                                <button id="import-apkg-btn" class="btn-secondary btn-small" type="button">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                                        <polyline points="7 10 12 15 17 10" />
-                                        <line x1="12" y1="15" x2="12" y2="3" />
-                                    </svg>
-                                    Import APKG
-                                </button>
-                                <button id="import-tsv-btn" class="btn-secondary btn-small" type="button">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round">
-                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                        <polyline points="14 2 14 8 20 8" />
-                                    </svg>
-                                    Import TSV/Text
-                                </button>
-                            </div>
-                            <div id="anki-stats" class="anki-stats hidden">
-                                <div class="stat-row">
-                                    <span class="stat-label">Imported Decks:</span>
-                                    <span id="anki-deck-count">0</span>
-                                </div>
-                                <div class="stat-row">
-                                    <span class="stat-label">Total Vocabulary:</span>
-                                    <span id="anki-vocab-count">0</span>
-                                </div>
-                                <div class="stat-grid">
-                                    <div class="stat-item mastered">
-                                        <span class="stat-number" id="anki-mastered-count">0</span>
-                                        <span class="stat-text">Mastered</span>
-                                    </div>
-                                    <div class="stat-item familiar">
-                                        <span class="stat-number" id="anki-familiar-count">0</span>
-                                        <span class="stat-text">Familiar</span>
-                                    </div>
-                                    <div class="stat-item learning">
-                                        <span class="stat-number" id="anki-learning-count">0</span>
-                                        <span class="stat-text">Learning</span>
-                                    </div>
-                                    <div class="stat-item new">
-                                        <span class="stat-number" id="anki-new-count">0</span>
-                                        <span class="stat-text">New</span>
-                                    </div>
-                                </div>
-                                <button id="clear-anki-btn" class="btn-text btn-small">Clear Anki Data</button>
-                                <button id="export-anki-btn" class="btn-secondary btn-small"
-                                    style="margin-top: 8px; width: 100%; justify-content: center;">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                                        <polyline points="17 8 12 3 7 8" />
-                                        <line x1="12" y1="3" x2="12" y2="15" />
-                                    </svg>
-                                    Export to Anki (.apkg)
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Grammar Focus (Always Visible) -->
-                    <div class="form-group">
-                        <label>Grammar Focus (Optional)</label>
-                        <div class="grammar-grid">
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="grammar" value="present"> Presente
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="grammar" value="preterite"> Pretérito
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="grammar" value="imperfect"> Imperfecto
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="grammar" value="future"> Futuro
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="grammar" value="subjunctive"> Subjuntivo
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="form-group large-input">
-                        <label for="scenario-select">Quick Scenarios</label>
-                        <select id="scenario-select" class="scenario-dropdown">
-                            <option value="">Custom (use text box below)</option>
-
-                            <optgroup label="🍽️ Dining & Food">
-                                <option value="restaurant">Ordering at a Restaurant</option>
-                                <option value="cafe">Coffee Shop Conversation</option>
-                                <option value="cooking">Cooking and Recipes</option>
-                                <option value="grocery">Grocery Shopping</option>
-                            </optgroup>
-
-                            <optgroup label="🏥 Health & Wellness">
-                                <option value="doctor">At the Doctor's Office</option>
-                                <option value="pharmacy">At the Pharmacy</option>
-                                <option value="gym">At the Gym / Fitness</option>
-                            </optgroup>
-
-                            <optgroup label="✈️ Travel & Transportation">
-                                <option value="travel">Travel and Directions</option>
-                                <option value="airport">At the Airport</option>
-                                <option value="hotel">Hotel Check-in and Services</option>
-                                <option value="taxi">Taking a Taxi/Uber</option>
-                                <option value="train">Train/Bus Station</option>
-                            </optgroup>
-
-                            <optgroup label="🛍️ Shopping & Services">
-                                <option value="shopping">Shopping for Clothes</option>
-                                <option value="bank">At the Bank</option>
-                                <option value="post_office">At the Post Office</option>
-                                <option value="hair_salon">At the Hair Salon</option>
-                            </optgroup>
-
-                            <optgroup label="💼 Work & Professional">
-                                <option value="interview">Job Interview</option>
-                                <option value="meeting">Business Meeting</option>
-                                <option value="networking">Professional Networking</option>
-                                <option value="office">Office Conversations</option>
-                            </optgroup>
-
-                            <optgroup label="👥 Social & Personal">
-                                <option value="phone">Phone Conversation</option>
-                                <option value="party">Social Event / Party</option>
-                                <option value="dating">First Date Conversation</option>
-                                <option value="friends">Catching Up with Friends</option>
-                                <option value="family">Family Gathering</option>
-                            </optgroup>
-
-                            <optgroup label="🏠 Housing & Home">
-                                <option value="apartment">Renting an Apartment</option>
-                                <option value="roommate">Finding a Roommate</option>
-                                <option value="repair">Calling for Repairs</option>
-                            </optgroup>
-
-                            <optgroup label="📚 Education & Learning">
-                                <option value="school">School Enrollment</option>
-                                <option value="university">University Life</option>
-                                <option value="library">At the Library</option>
-                            </optgroup>
-
-                            <optgroup label="🎭 Entertainment & Culture">
-                                <option value="museum">Museum Visit</option>
-                                <option value="concert">Concert / Live Event</option>
-                                <option value="movies">Going to the Movies</option>
-                                <option value="bookclub">Book Club Discussion</option>
-                            </optgroup>
-
-                            <optgroup label="🚨 Emergency & Special">
-                                <option value="emergency">Emergency Situation</option>
-                                <option value="lost">Lost - Asking for Help</option>
-                                <option value="complaint">Making a Complaint</option>
-                            </optgroup>
-
-                            <optgroup label="🎨 Hobbies & Interests">
-                                <option value="sports">Talking About Sports</option>
-                                <option value="gardening">Gardening and Plants</option>
-                                <option value="photography">Photography Hobby</option>
-                                <option value="music">Playing Music / Instruments</option>
-                            </optgroup>
-
-                            <optgroup label="💻 Technology & Modern Life">
-                                <option value="tech_support">Technical Support Call</option>
-                                <option value="social_media">Social Media Discussion</option>
-                            </optgroup>
-
-                            <optgroup label="🌍 Customs & Culture">
-                                <option value="customs">Cultural Exchange</option>
-                                <option value="holidays">Holiday Traditions</option>
-                            </optgroup>
-
-                            <optgroup label="🌲 Nature & Outdoors">
-                                <option value="hiking">Planning a Hike</option>
-                                <option value="beach">Day at the Beach</option>
-                                <option value="weather">Discussing Weather</option>
-                            </optgroup>
+                        <label for="template-select">Choose a Conversation Template</label>
+                        <select id="template-select" class="template-dropdown">
+                            <option value="">-- Select a Template --</option>
                         </select>
+                        <p class="hint">Templates define the behavior of both your main conversation and the side panel commentary.</p>
                     </div>
 
-                    <div class="form-group large-input">
-                        <label for="practice-goal">Or describe your custom goal</label>
-                        <textarea id="practice-goal"
-                            placeholder="e.g., 'Subjunctive commands', 'Ordering at a restaurant', 'Talking about my weekend'"></textarea>
-                        <p class="hint">Leave blank for general conversation.</p>
+                    <!-- Template Preview -->
+                    <div id="template-preview" class="template-preview hidden">
+                        <div class="preview-section">
+                            <h4>Main Thread: <span id="preview-main-persona"></span></h4>
+                            <p id="preview-main-prompt" class="preview-prompt"></p>
+                        </div>
+                        <div class="preview-section">
+                            <h4>Side Panel: <span id="preview-side-persona"></span></h4>
+                            <p id="preview-side-prompt" class="preview-prompt"></p>
+                        </div>
                     </div>
 
                     <button id="start-btn" class="btn-primary btn-large">
@@ -566,7 +325,7 @@
 
                 <aside id="tutor-panel" class="tutor-panel collapsed">
                     <div class="panel-header">
-                        <h3>AI Tutor</h3>
+                        <h3 id="side-persona-name">Commentary</h3>
                         <button id="tutor-settings-btn" class="icon-btn-small" aria-label="Tutor Settings"
                             title="Tutor Settings">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
@@ -734,50 +493,6 @@
             </div>
         </div>
 
-        <!-- TSV Import Modal -->
-        <div id="tsv-import-modal" class="modal hidden">
-            <div class="modal-content">
-                <h3>Import TSV/Text File</h3>
-                <p class="modal-description">Since text files don't contain scheduling data, please select the mastery
-                    level for these cards:</p>
-
-                <div class="mastery-selection">
-                    <label class="mastery-option">
-                        <input type="radio" name="tsv-mastery" value="mastered">
-                        <div class="mastery-card mastered">
-                            <div class="mastery-title">Mastered</div>
-                            <div class="mastery-desc">Words you know very well (6+ months interval)</div>
-                        </div>
-                    </label>
-                    <label class="mastery-option">
-                        <input type="radio" name="tsv-mastery" value="familiar" checked>
-                        <div class="mastery-card familiar">
-                            <div class="mastery-title">Familiar</div>
-                            <div class="mastery-desc">Words you're comfortable with (3-6 weeks interval)</div>
-                        </div>
-                    </label>
-                    <label class="mastery-option">
-                        <input type="radio" name="tsv-mastery" value="learning">
-                        <div class="mastery-card learning">
-                            <div class="mastery-title">Learning</div>
-                            <div class="mastery-desc">Words you're currently learning (1-3 weeks interval)</div>
-                        </div>
-                    </label>
-                    <label class="mastery-option">
-                        <input type="radio" name="tsv-mastery" value="new">
-                        <div class="mastery-card new">
-                            <div class="mastery-title">New</div>
-                            <div class="mastery-desc">New or challenging words (< 1 week interval)</div>
-                            </div>
-                    </label>
-                </div>
-
-                <div class="modal-actions">
-                    <button id="cancel-tsv-btn" class="btn-secondary">Cancel</button>
-                    <button id="confirm-tsv-btn" class="btn-primary">Import</button>
-                </div>
-            </div>
-        </div>
 
         <!-- Debug: System Prompt Modal -->
         <div id="debug-prompt-modal" class="modal hidden">
